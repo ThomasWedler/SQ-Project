@@ -10,6 +10,7 @@ class Import {
   var function = new Thomas  
   var files = function.getFiles
   
+  // calls the copy function
   function.copy(files)
   
 }
