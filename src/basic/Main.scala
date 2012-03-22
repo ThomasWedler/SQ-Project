@@ -2,13 +2,17 @@ package basic
 
 import java.io.File
 import javax.swing.JOptionPane
+import gui.Control
 
 object Main {
-
+  
+  var start = new Control()
+  
   // initialisation
   def main(args: Array[String]) {
-	  createFilesystem;
-	  new Import();
+	  createFilesystem
+	  start
+//	  new Import()
   }
   
   // on startup, checks if a filesystem already exists. if not, it creates one

@@ -1,10 +1,14 @@
 package function
 
-import java.io.{File,FileInputStream,FileOutputStream}
-import javax.swing.JFileChooser
-import javax.swing.filechooser.FileNameExtensionFilter
-import javax.swing.JOptionPane
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+
 import scala.actors.Exit
+
+import javax.swing.filechooser.FileNameExtensionFilter
+import javax.swing.JFileChooser
+import javax.swing.JOptionPane
 
 class Thomas {
   
