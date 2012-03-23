@@ -40,7 +40,7 @@ class Thomas {
 		  JOptionPane.showMessageDialog(null, "Import finished successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
-	// checks, if the file already exists at the specified destination and asks to overwrite it
+	// checks, if a file with the name already exists at the specified destination and asks to overwrite it
 	def check(f: File, destination: File) : Boolean = {
 		var abort = false
 		if (destination.exists()) {

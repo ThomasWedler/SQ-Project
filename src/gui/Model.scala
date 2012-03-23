@@ -4,6 +4,5 @@ package gui
 
 class Model {
   
-  var noClicks : Int = 0
   
 }

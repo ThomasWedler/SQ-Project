@@ -43,7 +43,7 @@ class View extends Frame {
 	var btnGroup = new JButton("Group")
 	var btnRelation = new JButton("Relation")
 	
-	var name = new JTextField()
+	var name = new JTextField
 	
 	var springLayout = new SpringLayout()
 	var sl_leftup = new SpringLayout()
@@ -55,51 +55,52 @@ class View extends Frame {
     centerOnScreen
 	resizable = false
 	
-	var mnEdit = new Menu("Edit")
-	var mnFile = new Menu("File")
-	var mnHelp = new Menu("Help")
-	var mnOptions = new Menu("Options")
-	var mnNew = new Menu("New")
+	var menu = new JMenuBar
+	var mnEdit = new JMenu("Edit")
+	var mnFile = new JMenu("File")
+	var mnHelp = new JMenu("Help")
+	var mnOptions = new JMenu("Options")
+	var mnNew = new JMenu("New")
 	
-	var mntmOpen = new MenuItem("Open")
-	var mntmGroup = new MenuItem("Group")
-	var mntmList = new MenuItem("List")
-	var mntmUndo = new MenuItem("Undo")
-	var mntmRedo = new MenuItem("Redo")
-	var mntmCopy = new MenuItem("Copy")
-	var mntmPaste = new MenuItem("Paste")
-	var mntmQuit = new MenuItem("Quit")
-	var mntmHelp = new MenuItem("Help Contents")
-	var mntmAbout = new MenuItem("About")
+	var mntmSave = new JMenuItem("Save")
+	var mntmOpen = new JMenuItem("Import Files")
+	var mntmGroup = new JMenuItem("Group")
+	var mntmList = new JMenuItem("List")
+	var mntmUndo = new JMenuItem("Undo")
+	var mntmRedo = new JMenuItem("Redo")
+	var mntmCopy = new JMenuItem("Copy")
+	var mntmPaste = new JMenuItem("Paste")
+	var mntmQuit = new JMenuItem("Quit")
+	var mntmHelp = new JMenuItem("Help Contents")
+	var mntmAbout = new JMenuItem("About")
 	
-	menuBar = new MenuBar {
-	  contents += new Menu("File") {
-	    contents += new Menu("New") {
-	      contents += new MenuItem("Group")
-	      contents += new MenuItem("List")
-	    }
-	    contents += new Separator()
-	    contents += new MenuItem("Import Files")
-	    contents += new Separator()
-	    contents += new MenuItem("Quit")
-	  }
-	  contents += new Menu("Edit") {
-	    contents += new MenuItem("Undo")
-	    contents += new MenuItem("Redo")
-	    contents += new Separator()
-	    contents += new MenuItem("Copy")
-	    contents += new MenuItem("Paste")
-	  }
-	  contents += new Menu("Options") {
-	  }
-	  contents += new Menu("Help") {
-	    contents += new MenuItem("Help")
-	    contents += new MenuItem("About")
-	  }
-	}
+	panel.add(menu);
+	menu.add(mnFile);
+	menu.add(mnEdit);
+	menu.add(mnOptions);
+	menu.add(mnHelp);
+	
+	mnFile.add(mnNew);
+	mnNew.add(mntmGroup);
+	mnNew.add(mntmList);
+			
+	mnFile.add(new JSeparator);
+	mnFile.add(mntmOpen);
+	mnFile.add(mntmSave);
+	mnFile.add(new JSeparator);
+	mnFile.add(mntmQuit);
+	
+	mnEdit.add(mntmUndo);
+	mnEdit.add(mntmRedo);
+	mnEdit.add(new JSeparator);
+	mnEdit.add(mntmCopy);
+	mnEdit.add(mntmPaste);
+	
+	mnHelp.add(mntmHelp);
+	mnHelp.add(mntmAbout);
 	
 	springLayout.putConstraint(SpringLayout.EAST, leftup, 200, SpringLayout.WEST, panel);
-	springLayout.putConstraint(SpringLayout.NORTH, leftup, 0, SpringLayout.NORTH, panel);
+	springLayout.putConstraint(SpringLayout.NORTH, leftup, 0, SpringLayout.SOUTH, menu);
 	springLayout.putConstraint(SpringLayout.SOUTH, leftup, 375, SpringLayout.NORTH, panel);
 	springLayout.putConstraint(SpringLayout.WEST, leftup, 0, SpringLayout.WEST, panel);
 
@@ -108,7 +109,7 @@ class View extends Frame {
 	springLayout.putConstraint(SpringLayout.SOUTH, leftdown, 0, SpringLayout.SOUTH, panel);
 	springLayout.putConstraint(SpringLayout.EAST, leftdown, 0, SpringLayout.WEST, mid);
 	
-	springLayout.putConstraint(SpringLayout.NORTH, mid, 0, SpringLayout.NORTH, panel);
+	springLayout.putConstraint(SpringLayout.NORTH, mid, 0, SpringLayout.NORTH, leftup);
 	springLayout.putConstraint(SpringLayout.WEST, mid, 0, SpringLayout.EAST, leftup);
 	springLayout.putConstraint(SpringLayout.SOUTH, mid, 0, SpringLayout.SOUTH, panel);
 	springLayout.putConstraint(SpringLayout.EAST, mid, 0, SpringLayout.WEST, right);
