@@ -3,59 +3,102 @@ package function
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
-
 import scala.actors.Exit
-
 import javax.swing.filechooser.FileNameExtensionFilter
 import javax.swing.JFileChooser
 import javax.swing.JOptionPane
+import scala.collection.mutable.ListBuffer
 
 class Thomas {
   
 	// opens a filechooser with a jpg, pdf and mp4 filter and returns the selected files as an array
 	def getFiles = {
-		var fc = new JFileChooser()
+		var fc = new JFileChooser
 		var filter = new FileNameExtensionFilter("JPG, PDF and MP4", "jpg", "pdf", "mp4")
 		fc.setFileFilter(filter)
 		fc.setMultiSelectionEnabled(true)
 		fc.showOpenDialog(null)
-		fc.getSelectedFiles()
+		fc.getSelectedFiles
 	}
 	
 	// copies the files to the matching folder in the filesystem
 	def copy(files: Array[File]) = {
-		var abort = false
+	  var abort = false
 		for (f <- files) {
-			var name = f.getName()
-			var length = name.length()
-			var suffix = name.substring(length-3, length)
-			var destination = new File("filesystem/" + suffix + "/" + f.getName())
-			abort = check(f, destination)
-			if (abort)
-			  new Exit(null, null)
+			var suffix = getType(f)
+			if (suffix.equals("txt"))
+			  suffix = "relations"
+			var destination = new File("filesystem/" + suffix + "/" + f.getName)
+			
+			var result = "none"
+			for (file <- walkthrough) {
+			  if (checkName(f, file))
+			  	result = overwrite(f)
+			}
+			
+			if (result.equals("Cancel")) {
+				abort = true
+				new Exit(null, null)
+			}
+			if (result.equals("Yes")) {
+				destination.delete
+			  	new FileOutputStream(destination) getChannel() transferFrom(new FileInputStream(f) getChannel, 0, Long.MaxValue)
+			}
+			if (result.equals("none")) {
+			  	new FileOutputStream(destination) getChannel() transferFrom(new FileInputStream(f) getChannel, 0, Long.MaxValue)
+			}
+	
 		}
-		if (abort)
-		  JOptionPane.showMessageDialog(null, "Import canceled.", "Canceled", JOptionPane.INFORMATION_MESSAGE);
-		else  
-		  JOptionPane.showMessageDialog(null, "Import finished successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+	  if (abort)
+	  	JOptionPane.showMessageDialog(null, "Import canceled.", "Canceled", JOptionPane.INFORMATION_MESSAGE);
+	  else
+		JOptionPane.showMessageDialog(null, "Import finished successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
-	// checks, if a file with the name already exists at the specified destination and asks to overwrite it
-	def check(f: File, destination: File) : Boolean = {
-		var abort = false
-		if (destination.exists()) {
-			var options: Array[Object] = Array("Cancel", "No", "Yes")
-	  		var selected = JOptionPane.showOptionDialog(null, "A file with that name already exists. Do you like to overwrite it?", "Overwrite", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options(1))
-	  		if (selected == 0)
-	  			abort = true
-	  		if (selected == 2) {
-	  		  destination.delete()
-	  		  check(f, destination)
-	  		}
+	// returns a string with the type (jpg, pdf, mp4) of the given file
+	def getType(f: File) = {
+	  var name = f.getName
+	  var length = name.length
+	  var suffix = name.substring(length-3, length)
+	  suffix
+	}
+	
+	// returns, wether the both files have the same name
+	def checkName(f1: File, f2: File) = {
+	  var check = false
+	  var name1 = f1.getName
+	  var name2 = f2.getName
+	  if (name1.equals(name2)) {
+		  check = true
+	  }
+	  check
+	}
+	
+	// walks through the filesystem and returns a list containing all files (no directories) 
+	def walkthrough() = {
+	  var list = new ListBuffer[File]
+	  	for (f <- new File("filesystem/").listFiles) {
+	  	  if (f.listFiles != null) {
+		    for (file <- f.listFiles) {
+		        list += file
+		    }
+	  	  }
 		}
-		else
-			new FileOutputStream(destination) getChannel() transferFrom(new FileInputStream(f) getChannel, 0, Long.MaxValue)
-		return abort
+		list.toList
+	}
+	
+	// asks, if the file should be overwritten
+	def overwrite(f: File) = {
+	  var result = "none"
+	    var options: Array[Object] = Array("Cancel", "No", "Yes")
+		var selected = JOptionPane.showOptionDialog(null, "A file with that name already exists. Do you like to overwrite it?", "Overwrite", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options(1))
+		if (selected == 0)
+			result = "Cancel"
+		if (selected == 1)
+			result = "No"
+		if (selected == 2)
+			result = "Yes"
+	  result
 	}
 
 }

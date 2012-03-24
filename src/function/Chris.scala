@@ -5,10 +5,9 @@ import java.io.File
 import javax.swing.JOptionPane
 
 class Chris {
-
 	
    def list(array : Array[File], name : String) {
-      val writerlist = new PrintWriter(new File(name+".txt" ))	
+      val writerlist = new PrintWriter(new File("filesystem/relations/" + name + ".txt"))	
       writerlist.write("Playlist\r\n")
       for (a <- array)
         writerlist.write(a.getPath + "\r\n")
@@ -17,8 +16,8 @@ class Chris {
   
     def group(array : Array[File], name : String) {
     	sort(array : Array[File])
-    	val writergroup = new PrintWriter(new File(name+".txt" ))
-    	writergroup.write("Playlist\r\n")
+    	val writergroup = new PrintWriter(new File("filesystem/relations/" + name + ".txt"))
+    	writergroup.write("Group\r\n")
     	for (a <- array)
     		writergroup.write(a.getPath + "\r\n")
     	writergroup.close

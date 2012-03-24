@@ -21,6 +21,9 @@ import java.awt.Color
 import javax.swing.JComponent
 import scala.swing.event.ButtonClicked
 import basic.Import
+import javax.swing.KeyStroke
+import java.awt.event.KeyEvent
+import java.awt.event.InputEvent
 
 // stellt die gui
 
@@ -98,6 +101,34 @@ class View extends Frame {
 	
 	mnHelp.add(mntmHelp);
 	mnHelp.add(mntmAbout);
+	
+	mntmAbout.setMnemonic(KeyEvent.VK_A);
+	mntmHelp.setMnemonic(KeyEvent.VK_C);
+	mntmPaste.setMnemonic(KeyEvent.VK_P);
+	mntmCopy.setMnemonic(KeyEvent.VK_C);
+	mntmRedo.setMnemonic(KeyEvent.VK_R);
+	mntmUndo.setMnemonic(KeyEvent.VK_U);
+	mntmQuit.setMnemonic(KeyEvent.VK_Q);
+	mntmSave.setMnemonic(KeyEvent.VK_S);
+	mntmOpen.setMnemonic(KeyEvent.VK_O);
+	mntmList.setMnemonic(KeyEvent.VK_L);
+	mntmGroup.setMnemonic(KeyEvent.VK_G);
+	mnNew.setMnemonic(KeyEvent.VK_N);
+	mnHelp.setMnemonic(KeyEvent.VK_H);
+	mnOptions.setMnemonic(KeyEvent.VK_O);
+	mnEdit.setMnemonic(KeyEvent.VK_E);
+	mnFile.setMnemonic(KeyEvent.VK_F);
+	
+	mntmQuit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, InputEvent.ALT_MASK));
+	mntmGroup.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
+	mntmHelp.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
+	mntmPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK));
+	mntmCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
+	mntmRedo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_MASK));
+	mntmUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK));
+	mntmSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
+	mntmOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
+	mntmList.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
 	
 	springLayout.putConstraint(SpringLayout.EAST, leftup, 200, SpringLayout.WEST, panel);
 	springLayout.putConstraint(SpringLayout.NORTH, leftup, 0, SpringLayout.SOUTH, menu);
