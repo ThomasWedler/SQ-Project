@@ -24,6 +24,8 @@ import basic.Import
 import javax.swing.KeyStroke
 import java.awt.event.KeyEvent
 import java.awt.event.InputEvent
+import java.awt.GridLayout
+import javax.swing.JScrollPane
 
 // stellt die gui
 
@@ -50,9 +52,18 @@ class View extends Frame {
 	
 	var springLayout = new SpringLayout()
 	var sl_leftup = new SpringLayout()
-	var sl_mid = new SpringLayout()
+	var layoutMid = new GridLayout(6, 6)
 	var sl_right = new SpringLayout()
 	var sl_leftdown = new SpringLayout()
+
+	panel.setLayout(springLayout);
+	leftup.setLayout(sl_leftup);
+	right.setLayout(sl_right);
+	mid.setLayout(layoutMid);
+	leftdown.setLayout(sl_leftdown);
+	
+//	var scrollpane = new JScrollPane(mid);
+
 	
     minimumSize = new Dimension(1280, 800)
     centerOnScreen
@@ -76,7 +87,7 @@ class View extends Frame {
 	var mntmQuit = new JMenuItem("Quit")
 	var mntmHelp = new JMenuItem("Help Contents")
 	var mntmAbout = new JMenuItem("About")
-	
+		
 	panel.add(menu);
 	menu.add(mnFile);
 	menu.add(mnEdit);
@@ -173,17 +184,12 @@ class View extends Frame {
 	sl_leftdown.putConstraint(SpringLayout.WEST, lblTools, 0, SpringLayout.WEST, leftdown);
 	sl_leftdown.putConstraint(SpringLayout.SOUTH, lblTools, 30, SpringLayout.NORTH, leftdown);
 	sl_leftdown.putConstraint(SpringLayout.HORIZONTAL_CENTER, lblTools, 0, SpringLayout.HORIZONTAL_CENTER, leftdown);
-
-	panel.setLayout(springLayout);
-	leftup.setLayout(sl_leftup);
-	right.setLayout(sl_right);
-	mid.setLayout(sl_mid);
-	leftdown.setLayout(sl_leftdown);
 	
 	panel.add(right)
 	panel.add(leftup);
 	panel.add(mid);
 	panel.add(leftdown);
+//	panel.add(scrollpane)
 	right.add(lblName);
 	leftup.add(lblOverview);
 	right.add(name);

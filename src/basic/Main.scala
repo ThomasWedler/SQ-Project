@@ -9,9 +9,9 @@ object Main {
   // initialisation
   def main(args: Array[String]) {
 	  createFilesystem
-//	  new Control
+	  new Control
 	  // new Annotation
-	 new Import
+//	  new Import
   }
   
   // on startup, checks if a filesystem already exists. if not, it creates one

@@ -8,6 +8,7 @@ import javax.swing.filechooser.FileNameExtensionFilter
 import javax.swing.JFileChooser
 import javax.swing.JOptionPane
 import scala.collection.mutable.ListBuffer
+import javax.swing.ImageIcon
 
 class Thomas {
   
@@ -26,10 +27,7 @@ class Thomas {
 	  var abort = false
 		for (f <- files) {
 			var suffix = getType(f)
-			if (suffix.equals("txt"))
-			  suffix = "relations"
 			var destination = new File("filesystem/" + suffix + "/" + f.getName)
-			
 			var result = overwrite(f)
 			
 			if (result.equals("Cancel")) {
@@ -59,6 +57,14 @@ class Thomas {
 	  suffix
 	}
 	
+	// checks if the type of the given file is a valid type
+	def checkType(f: File) = {
+	  var check = false
+	  if (getType(f).equals("jpg") || getType(f).equals("pdf") || getType(f).equals("mp4") || getType(f).equals("txt"))
+	    check = true
+	  check
+	}
+	
 	// returns, wether the both files have the same name
 	def checkName(f1: File, f2: File) = {
 	  var check = false
@@ -76,6 +82,7 @@ class Thomas {
 	  	for (f <- new File("filesystem/").listFiles) {
 	  	  if (f.listFiles != null) {
 		    for (file <- f.listFiles) {
+		      if (checkType(file))
 		        list += file
 		    }
 	  	  }
@@ -106,5 +113,5 @@ class Thomas {
 			result = "Yes"
 	  result
 	}
-
+	
 }
