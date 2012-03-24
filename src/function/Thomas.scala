@@ -30,11 +30,7 @@ class Thomas {
 			  suffix = "relations"
 			var destination = new File("filesystem/" + suffix + "/" + f.getName)
 			
-			var result = "none"
-			for (file <- walkthrough) {
-			  if (checkName(f, file))
-			  	result = overwrite(f)
-			}
+			var result = overwrite(f)
 			
 			if (result.equals("Cancel")) {
 				abort = true
@@ -87,11 +83,21 @@ class Thomas {
 		list.toList
 	}
 	
-	// asks, if the file should be overwritten
+	// returns the answer of the overwrite-question
 	def overwrite(f: File) = {
 	  var result = "none"
+	  for (file <- walkthrough) {
+		if (checkName(f, file))
+			result = overwriteQuestion(f)
+		}
+	  result
+	}
+	
+	// asks, if the file should be overwritten
+	def overwriteQuestion(f: File) = {
+	  var result = "none"
 	    var options: Array[Object] = Array("Cancel", "No", "Yes")
-		var selected = JOptionPane.showOptionDialog(null, "A file with that name already exists. Do you like to overwrite it?", "Overwrite", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options(1))
+		var selected = JOptionPane.showOptionDialog(null, "A file with the name '" + f.getName() + "' already exists. Do you like to overwrite it?", "Overwrite", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options(1))
 		if (selected == 0)
 			result = "Cancel"
 		if (selected == 1)
