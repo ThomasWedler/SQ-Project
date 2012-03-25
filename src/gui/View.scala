@@ -26,11 +26,12 @@ import java.awt.event.KeyEvent
 import java.awt.event.InputEvent
 import java.awt.GridLayout
 import javax.swing.JScrollPane
+import javax.swing.JScrollBar
 
 // stellt die gui
 
 class View extends Frame {
-  
+    
   	title = "Awesome GUI";
   
 	var panel = new JPanel()
@@ -52,18 +53,19 @@ class View extends Frame {
 	
 	var springLayout = new SpringLayout()
 	var sl_leftup = new SpringLayout()
-	var layoutMid = new GridLayout(6, 6)
+	var layoutMid = new GridLayout(0,6)
 	var sl_right = new SpringLayout()
 	var sl_leftdown = new SpringLayout()
+	var sl_name = new SpringLayout()
 
 	panel.setLayout(springLayout);
 	leftup.setLayout(sl_leftup);
 	right.setLayout(sl_right);
 	mid.setLayout(layoutMid);
 	leftdown.setLayout(sl_leftdown);
+	namebackground.setLayout(sl_name)
 	
-//	var scrollpane = new JScrollPane(mid);
-
+	var scrollpane = new JScrollPane(mid)
 	
     minimumSize = new Dimension(1280, 800)
     centerOnScreen
@@ -87,31 +89,35 @@ class View extends Frame {
 	var mntmQuit = new JMenuItem("Quit")
 	var mntmHelp = new JMenuItem("Help Contents")
 	var mntmAbout = new JMenuItem("About")
+    var mntmRefresh = new JMenuItem("Refresh")
+	var mntmDelete = new JMenuItem("Delete")
 		
-	panel.add(menu);
-	menu.add(mnFile);
-	menu.add(mnEdit);
-	menu.add(mnOptions);
-	menu.add(mnHelp);
+	panel.add(menu)
+	menu.add(mnFile)
+	menu.add(mnEdit)
+	menu.add(mnOptions)
+	menu.add(mnHelp)
 	
-	mnFile.add(mnNew);
-	mnNew.add(mntmGroup);
-	mnNew.add(mntmList);
+	mnFile.add(mnNew)
+	mnNew.add(mntmGroup)
+	mnNew.add(mntmList)
 			
-	mnFile.add(new JSeparator);
-	mnFile.add(mntmOpen);
-	mnFile.add(mntmSave);
-	mnFile.add(new JSeparator);
-	mnFile.add(mntmQuit);
+	mnFile.add(new JSeparator)
+	mnFile.add(mntmOpen)
+	mnFile.add(mntmDelete)
+	mnFile.add(mntmSave)
+	mnFile.add(mntmRefresh)
+	mnFile.add(new JSeparator)
+	mnFile.add(mntmQuit)
 	
-	mnEdit.add(mntmUndo);
-	mnEdit.add(mntmRedo);
-	mnEdit.add(new JSeparator);
-	mnEdit.add(mntmCopy);
-	mnEdit.add(mntmPaste);
+	mnEdit.add(mntmUndo)
+	mnEdit.add(mntmRedo)
+	mnEdit.add(new JSeparator)
+	mnEdit.add(mntmCopy)
+	mnEdit.add(mntmPaste)
 	
-	mnHelp.add(mntmHelp);
-	mnHelp.add(mntmAbout);
+	mnHelp.add(mntmHelp)
+	mnHelp.add(mntmAbout)
 	
 	mntmAbout.setMnemonic(KeyEvent.VK_A);
 	mntmHelp.setMnemonic(KeyEvent.VK_C);
@@ -121,7 +127,7 @@ class View extends Frame {
 	mntmUndo.setMnemonic(KeyEvent.VK_U);
 	mntmQuit.setMnemonic(KeyEvent.VK_Q);
 	mntmSave.setMnemonic(KeyEvent.VK_S);
-	mntmOpen.setMnemonic(KeyEvent.VK_O);
+	mntmOpen.setMnemonic(KeyEvent.VK_I);
 	mntmList.setMnemonic(KeyEvent.VK_L);
 	mntmGroup.setMnemonic(KeyEvent.VK_G);
 	mnNew.setMnemonic(KeyEvent.VK_N);
@@ -129,7 +135,11 @@ class View extends Frame {
 	mnOptions.setMnemonic(KeyEvent.VK_O);
 	mnEdit.setMnemonic(KeyEvent.VK_E);
 	mnFile.setMnemonic(KeyEvent.VK_F);
+	mntmRefresh.setMnemonic(KeyEvent.VK_R)
+	mntmDelete.setMnemonic(KeyEvent.VK_D)
 	
+	mntmDelete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_MASK));
+	mntmRefresh.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
 	mntmQuit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, InputEvent.ALT_MASK));
 	mntmGroup.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
 	mntmHelp.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
@@ -138,7 +148,7 @@ class View extends Frame {
 	mntmRedo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_MASK));
 	mntmUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK));
 	mntmSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
-	mntmOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
+	mntmOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_MASK));
 	mntmList.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
 	
 	springLayout.putConstraint(SpringLayout.EAST, leftup, 200, SpringLayout.WEST, panel);
@@ -149,12 +159,12 @@ class View extends Frame {
 	springLayout.putConstraint(SpringLayout.NORTH, leftdown, 0, SpringLayout.SOUTH, leftup);
 	springLayout.putConstraint(SpringLayout.WEST, leftdown, 0, SpringLayout.WEST, panel);
 	springLayout.putConstraint(SpringLayout.SOUTH, leftdown, 0, SpringLayout.SOUTH, panel);
-	springLayout.putConstraint(SpringLayout.EAST, leftdown, 0, SpringLayout.WEST, mid);
+	springLayout.putConstraint(SpringLayout.EAST, leftdown, 0, SpringLayout.WEST, scrollpane);
 	
-	springLayout.putConstraint(SpringLayout.NORTH, mid, 0, SpringLayout.NORTH, leftup);
-	springLayout.putConstraint(SpringLayout.WEST, mid, 0, SpringLayout.EAST, leftup);
-	springLayout.putConstraint(SpringLayout.SOUTH, mid, 0, SpringLayout.SOUTH, panel);
-	springLayout.putConstraint(SpringLayout.EAST, mid, 0, SpringLayout.WEST, right);
+	springLayout.putConstraint(SpringLayout.NORTH, scrollpane, 0, SpringLayout.NORTH, leftup);
+	springLayout.putConstraint(SpringLayout.WEST, scrollpane, 0, SpringLayout.EAST, leftup);
+	springLayout.putConstraint(SpringLayout.SOUTH, scrollpane, 0, SpringLayout.SOUTH, panel);
+	springLayout.putConstraint(SpringLayout.EAST, scrollpane, 0, SpringLayout.WEST, right);
 	
 	springLayout.putConstraint(SpringLayout.SOUTH, right, 0, SpringLayout.SOUTH, panel);
 	springLayout.putConstraint(SpringLayout.NORTH, right, 0, SpringLayout.NORTH, leftup);
@@ -166,14 +176,14 @@ class View extends Frame {
 	sl_leftup.putConstraint(SpringLayout.SOUTH, lblOverview, 30, SpringLayout.NORTH, leftup);
 	sl_leftup.putConstraint(SpringLayout.HORIZONTAL_CENTER, lblOverview, 0, SpringLayout.HORIZONTAL_CENTER, leftup);
     
-	sl_right.putConstraint(SpringLayout.NORTH, lblName, 5, SpringLayout.NORTH, right);
-	sl_right.putConstraint(SpringLayout.SOUTH, lblName, 25, SpringLayout.NORTH, right);
-	sl_right.putConstraint(SpringLayout.WEST, lblName, 0, SpringLayout.WEST, right);
-	sl_right.putConstraint(SpringLayout.HORIZONTAL_CENTER, lblName, 0, SpringLayout.HORIZONTAL_CENTER, right);
+	sl_name.putConstraint(SpringLayout.NORTH, lblName, 5, SpringLayout.NORTH, namebackground);
+	sl_name.putConstraint(SpringLayout.SOUTH, lblName, 25, SpringLayout.NORTH, namebackground);
+	sl_name.putConstraint(SpringLayout.WEST, lblName, 0, SpringLayout.WEST, namebackground);
+	sl_name.putConstraint(SpringLayout.HORIZONTAL_CENTER, lblName, 0, SpringLayout.HORIZONTAL_CENTER, namebackground);
 	
-	sl_right.putConstraint(SpringLayout.NORTH, name, 0, SpringLayout.SOUTH, lblName);
-	sl_right.putConstraint(SpringLayout.WEST, name, 10, SpringLayout.WEST, right);
-	sl_right.putConstraint(SpringLayout.EAST, name, -10, SpringLayout.EAST, right);
+	sl_name.putConstraint(SpringLayout.NORTH, name, 0, SpringLayout.SOUTH, lblName);
+	sl_name.putConstraint(SpringLayout.WEST, name, 10, SpringLayout.WEST, namebackground);
+	sl_name.putConstraint(SpringLayout.EAST, name, -10, SpringLayout.EAST, namebackground);
 	
 	sl_right.putConstraint(SpringLayout.NORTH, namebackground, 0, SpringLayout.NORTH, right);
 	sl_right.putConstraint(SpringLayout.WEST, namebackground, 0, SpringLayout.WEST, right);
@@ -187,15 +197,16 @@ class View extends Frame {
 	
 	panel.add(right)
 	panel.add(leftup);
-	panel.add(mid);
 	panel.add(leftdown);
-//	panel.add(scrollpane)
-	right.add(lblName);
+	panel.add(scrollpane)
+	namebackground.add(lblName);
 	leftup.add(lblOverview);
-	right.add(name);
+	namebackground.add(name);
 	name.setColumns(10);
 	leftdown.add(lblTools);
 	right.add(namebackground);
+	
+	namebackground.setVisible(false)
 
 	leftup.setBackground(Color.LIGHT_GRAY);
 	leftup.setBorder(new LineBorder(Color.DARK_GRAY, 2));

@@ -1,49 +1,91 @@
 package gui
 
+import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
-import scala.swing.event.ActionEvent
+
 import basic.Import
-import function.Thomas
-import scala.collection.mutable.ListBuffer
-import javax.swing.ImageIcon
+import function.Chris
+import javax.swing.undo.UndoManager
+import javax.swing._
 import javax.swing.JLabel
-import scala.swing.Alignment
-import javax.swing.JButton
-import java.awt.GridLayout
 import javax.swing.JPanel
-import java.awt.Dimension
+
 
 // Verwaltung der darzustellenden Daten
 
 class Control {
   
-  var Thomas = new Thomas
-
   val view = new View
   val model = new Model
   
+  var chris = new function.Chris
+//  var annotation = new c
+  
+  var undomanager = new UndoManager
+  undomanager.setLimit(1000)
+  
+  addLabels
   refresh
   
-  def refresh() {
-    var list = getImageList
+  view.name.getDocument().addUndoableEditListener(undomanager)
+  
+  // undo
+  view.mntmUndo.addActionListener( new ActionListener {
+	  def actionPerformed(e:ActionEvent) {
+		if (undomanager.canUndo)
+			undomanager.undo
+		else
+			JOptionPane.showMessageDialog(null, "Cannot undo the last action!", "Cannot Undo", JOptionPane.ERROR_MESSAGE)
+	  }
+  })
+  
+  // redo
+  view.mntmRedo.addActionListener( new ActionListener {
+	  def actionPerformed(e:ActionEvent) {
+		if (undomanager.canRedo)
+			undomanager.redo
+		else
+			JOptionPane.showMessageDialog(null, "Cannot redo the last action!", "Cannot Redo", JOptionPane.ERROR_MESSAGE);	  
+	  }
+  })
+  
+  // adds the quit function
+  view.mntmQuit.addActionListener( new ActionListener {
+	  def actionPerformed(e:ActionEvent) {
+		  System.exit(0)
+	  }
+  })
+  
+  // adds the import function
+  view.mntmOpen.addActionListener( new ActionListener {
+	  def actionPerformed(e:ActionEvent) {
+	    new Import
+	    addLabels
+	    refresh
+	  }
+  })
+  
+  // add the refresh function
+  view.mntmRefresh.addActionListener( new ActionListener {
+	  def actionPerformed(e:ActionEvent) {
+	    refresh
+	  }
+  })
+  
+  // refreshes the ui
+  def refresh {
+	  view.panel.updateUI
+  }
+    
+  // adds the from the filesystem created labels to the mid panel
+  def addLabels {
+    var list = model.getImageList
+    view.mid.removeAll
     for (i <- list) {
       view.mid.add(i)
     }
-    
-    view.panel.updateUI()
   }
   
-  def getImageList() = {
-	  var list = new ListBuffer[JLabel]
-	  var filesystem = Thomas.walkthrough
-	  for (f <- filesystem) {
-	    var image = new ImageIcon("src/resources/Vlc.png")
-	    var label = new JLabel(f.getName(), image, Alignment.Center.id)
-	    label.setVerticalTextPosition(Alignment.Bottom.id)
-	    label.setHorizontalTextPosition(Alignment.Center.id)
-	    list += label
-	  }
-	  list.toList
-  }
   
+
 }

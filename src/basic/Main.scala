@@ -11,7 +11,6 @@ object Main {
 	  createFilesystem
 	  new Control
 	  // new Annotation
-//	  new Import
   }
   
   // on startup, checks if a filesystem already exists. if not, it creates one
