@@ -19,15 +19,41 @@ class Control {
   val model = new Model
   
   var chris = new function.Chris
-//  var annotation = new c
   
   var undomanager = new UndoManager
   undomanager.setLimit(1000)
   
-  addLabels
   refresh
   
   view.name.getDocument().addUndoableEditListener(undomanager)
+  
+  // menu item group
+  view.mntmGroup.addActionListener( new ActionListener {
+	  def actionPerformed(e:ActionEvent) {
+		setAnnotationPanel("Group")
+	  }
+  })
+  
+  // menu item list
+  view.mntmList.addActionListener( new ActionListener {
+	  def actionPerformed(e:ActionEvent) {
+		 setAnnotationPanel("Playlist")
+	  }
+  })
+  
+  // button group
+  view.btnGroup.addActionListener( new ActionListener {
+	  def actionPerformed(e:ActionEvent) {
+		setAnnotationPanel("Group")
+	  }
+  })
+  
+  // button list
+  view.btnList.addActionListener( new ActionListener {
+	  def actionPerformed(e:ActionEvent) {
+		 setAnnotationPanel("Playlist")
+	  }
+  })
   
   // undo
   view.mntmUndo.addActionListener( new ActionListener {
@@ -60,7 +86,6 @@ class Control {
   view.mntmOpen.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
 	    new Import
-	    addLabels
 	    refresh
 	  }
   })
@@ -72,8 +97,24 @@ class Control {
 	  }
   })
   
+  // help contents
+  view.mntmHelp.addActionListener( new ActionListener {
+	  def actionPerformed(e:ActionEvent) {
+	  	JOptionPane.showMessageDialog(null, "Help Contents are still under development.", "Help Contents", JOptionPane.INFORMATION_MESSAGE);
+	  }
+  })
+  
+  // about
+  view.mntmAbout.addActionListener( new ActionListener {
+	  def actionPerformed(e:ActionEvent) {
+	  	JOptionPane.showMessageDialog(null, "Version 1.0.0\n\nVery special thanks to:\n    David Cyborra\n    Kristof Korwisi\n    Thomas Wedler\n    Chris Zimmerer", "About", JOptionPane.INFORMATION_MESSAGE);
+	  }
+  })
+  
   // refreshes the ui
   def refresh {
+	  addLabels
+	  addOverviewLabels
 	  view.panel.updateUI
   }
     
@@ -81,11 +122,27 @@ class Control {
   def addLabels {
     var list = model.getImageList
     view.mid.removeAll
-    for (i <- list) {
+    for (i <- list)
       view.mid.add(i)
-    }
+    model.imageList = list
   }
   
+  // adds the name of the from the filesystem created labels to the overview panel
+  def addOverviewLabels {
+    var list = model.getOverviewList
+    view.overview.removeAll()
+    for (i <- list) {
+    	view.overview.add(new JLabel(i.getText()))
+    }
+    model.overviewList = list
+  }
   
-
+  // sets the annotation panel right
+  def setAnnotationPanel(s: String) {
+    	view.annotation.setVisible(true)
+    	view.lblName.setText(s + ":")
+    	view.name.setText("New " + s)
+    	view.name.requestFocus
+  }
+  
 }
