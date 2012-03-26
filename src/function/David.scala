@@ -34,9 +34,11 @@ package function
 // ----------------------------------edit--------------------------------------- //
       } else if (readOrEdit.equals("edit")) {
         if (fileType.equals("pdf")) {
-          //..open ???
+          //..open adobe acrobat
+          Runtime.getRuntime().exec("start acrord32.exe " + file.getAbsolutePath())
         } else if (fileType.equals("mp4")) {
-          //..open ???
+          //..open windows movie maker
+          Runtime.getRuntime().exec("start moviemaker " + file.getAbsolutePath())
         } else if (fileType.equals("jpg") || fileType.equals("jpeg")) {
           //..open paint
           Runtime.getRuntime().exec("start mspaint " + file.getAbsolutePath())
