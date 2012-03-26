@@ -6,25 +6,20 @@ import javax.swing.JOptionPane
 
 class Chris {
 	
-   def list(array : Array[File], name : String) {
-      val writerlist = new PrintWriter(new File("filesystem/relations/" + name + ".txt"))	
-      writerlist.write("Playlist\r\n")
-      for (a <- array)
-        writerlist.write(a.getPath + "\r\n")
-      writerlist.close
+   def list(list: List[File], name: String) {
+      val writer = new PrintWriter(new File("filesystem/relations/" + name + ".txt"))	
+      writer.write("List:\r\n")
+      for (l <- list)
+        writer.write(l.getPath + "\r\n")
+      writer.close
   }
   
-    def group(array : Array[File], name : String) {
-    	sort(array : Array[File])
-    	val writergroup = new PrintWriter(new File("filesystem/relations/" + name + ".txt"))
-    	writergroup.write("Group\r\n")
-    	for (a <- array)
-    		writergroup.write(a.getPath + "\r\n")
-    	writergroup.close
-  }
-
-    def sort(array : Array[File]) {
-    	scala.util.Sorting.quickSort(array)
+    def group(list : List[File], name : String) {
+    	val writer = new PrintWriter(new File("filesystem/relations/" + name + ".txt"))
+    	writer.write("Group:\r\n")
+    	for (l <- list)
+    		writer.write(l.getPath + "\r\n")
+    	writer.close
   }
     
 }

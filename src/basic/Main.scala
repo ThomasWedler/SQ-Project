@@ -5,12 +5,11 @@ import javax.swing.JOptionPane
 import gui.Control
 
 object Main {
-    
+  
   // initialisation
   def main(args: Array[String]) {
 	  createFilesystem
 	  new Control
-	  // new Annotation
   }
   
   // on startup, checks if a filesystem already exists. if not, it creates one
