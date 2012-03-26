@@ -8,6 +8,11 @@ import javax.swing.ImageIcon
 import scala.swing.Alignment
 import javax.swing.JPanel
 import java.io.File
+import java.awt.Color
+import java.awt.event.MouseListener
+import java.awt.event.MouseEvent
+import java.awt.Dimension
+import javax.swing.border.LineBorder
 
 // verwaltet die darzustellenden Daten
 
@@ -17,6 +22,26 @@ class Model {
   
   var imageList = getImageList
   var overviewList = getOverviewList
+
+  var relationList = new ListBuffer[JLabel]
+  
+//  def filter(isIn: (Int) => Boolean) {
+//    items.foreach(i => if(isIn(i))
+//  }
+//  
+//  
+//  def myIsIn(item: Int): Boolean =
+//    item < 5
+//  
+//  var l = 1 :: 2 :: 3 :: 4 :: 5 :: Nil
+//  var l2 = List(1,2,3,4,5)
+//  
+//  var myFunctionVariable: (Int) => Boolean = myIsIn 
+//  
+//  var l3 = l.filter(_ < 5)
+//  
+//  var x = 3
+//  l3.append(3)
     
   // walks through the filesystem and creates a list containing a label for each file
   def getImageList = {
@@ -28,6 +53,7 @@ class Model {
 	    var label = new JLabel(name, image, Alignment.Center.id)
 	    label.setVerticalTextPosition(Alignment.Bottom.id)
 	    label.setHorizontalTextPosition(Alignment.Center.id)
+	    label.setFocusable(false)
 	    list += label
 	  }
 	  fill(list.toList, 36)
@@ -57,11 +83,11 @@ class Model {
   def getOverviewList = {
     var list = new ListBuffer[JLabel]
     list += new JLabel("")
-    checkContent("  JPG", "jpg", list)
-    checkContent("  PDF", "pdf", list)
-    checkContent("  MP4", "mp4", list)
     checkContent("  Relations", "txt", list)
-	fill(list.toList, 19)
+    checkContent("  JPG", "jpg", list)
+    checkContent("  MP4", "mp4", list)
+    checkContent("  PDF", "pdf", list)
+	fill(list.toList, 34)
   }
   
   // checks the filesystem for directory contents and adds them to the overview list
@@ -79,6 +105,20 @@ class Model {
       list += new JLabel("      <empty>")
     list += new JLabel("")
     list
+  }
+  
+  // fills the relation list from the image icon content
+  def getRelationList = {
+	for (i <- imageList) {
+	  if (i.isEnabled) {
+	    if (!relationList.contains(i))
+	      relationList += i
+	  } else {
+	    if (relationList.contains(i))
+	      relationList -= i
+	  }
+	}
+	fill(relationList.toList, 26)
   }
   
 }

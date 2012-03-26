@@ -42,24 +42,17 @@ class View extends Frame {
 	var leftdown = new JPanel
 	var annotation = new JPanel
 	var overview = new JPanel
+	var relation = new JPanel
 	
 	var lblOverview = new JLabel("Overview", Alignment.Center.id)
 	var lblTools = new JLabel("Relations", Alignment.Center.id)
 	var lblName = new JLabel("Name", Alignment.Center.id)
 	
-	var lblJPG = new JLabel("JPG")
-	var lblPDF = new JLabel("PDF")
-	var lblMP4 = new JLabel("MP4")
-	var lblRelations = new JLabel("Relations")
-	
-	var contentjpg = new JLabel("    <empty>")
-   	var contentpdf = new JLabel("<empty>")
-  	var contentmp4 = new JLabel("<empty>")
-  	var contentrelations = new JLabel("<empty>")
-	
-	var btnList = new JButton("List")
-	var btnGroup = new JButton("Group")
-	var btnRelation = new JButton("Relation")
+	var btnList = new JButton("New List")
+	var btnGroup = new JButton("New Group")
+	var btnPlay = new JButton("Play")
+	var btnSave = new JButton("Save")
+	var btnCancel = new JButton("Cancel")
 	
 	var name = new JTextField
 	
@@ -78,9 +71,11 @@ class View extends Frame {
 	leftdown.setLayout(sl_leftdown);
 	annotation.setLayout(sl_name)
 	overview.setLayout(layoutOverview)
+	relation.setLayout(layoutOverview)
 	
 	var sp_mid = new JScrollPane(mid)
 	var sp_overview = new JScrollPane(overview)
+	var sp_relation = new JScrollPane(relation)
 	
     minimumSize = new Dimension(1280, 800)
     centerOnScreen
@@ -93,21 +88,19 @@ class View extends Frame {
 	var mnOptions = new JMenu("Options")
 	var mnNew = new JMenu("New Relation")
 	
+	var mntmPlay = new JMenuItem("Play Relation")
 	var mntmSave = new JMenuItem("Save Relation")
+	var mntmLoad = new JMenuItem("Load Relation")
 	var mntmOpen = new JMenuItem("Import Files")
 	var mntmGroup = new JMenuItem("Group")
 	var mntmList = new JMenuItem("List")
 	var mntmUndo = new JMenuItem("Undo")
 	var mntmRedo = new JMenuItem("Redo")
-	var mntmCopy = new JMenuItem("Copy")
-	var mntmPaste = new JMenuItem("Paste")
 	var mntmQuit = new JMenuItem("Quit")
 	var mntmHelp = new JMenuItem("Help Contents")
 	var mntmAbout = new JMenuItem("About")
     var mntmRefresh = new JMenuItem("Refresh")
 	var mntmDelete = new JMenuItem("Delete Files")
-	var mntmAdd = new JMenuItem("Add to Relation")
-	var mntmRemove = new JMenuItem("Remove from Relation")
 		
 	panel.add(menu)
 	menu.add(mnFile)
@@ -129,20 +122,15 @@ class View extends Frame {
 	mnEdit.add(mntmUndo)
 	mnEdit.add(mntmRedo)
 	mnEdit.add(new JSeparator)
-	mnEdit.add(mntmCopy)
-	mnEdit.add(mntmPaste)
-	mnEdit.add(new JSeparator)
-	mnEdit.add(mntmAdd)
-	mnEdit.add(mntmRemove)
+	mnEdit.add(mntmPlay)
 	mnEdit.add(mntmSave)
+	mnEdit.add(mntmLoad)
 	
 	mnHelp.add(mntmHelp)
 	mnHelp.add(mntmAbout)
 	
 	mntmAbout.setMnemonic(KeyEvent.VK_A);
 	mntmHelp.setMnemonic(KeyEvent.VK_C);
-	mntmPaste.setMnemonic(KeyEvent.VK_P);
-	mntmCopy.setMnemonic(KeyEvent.VK_C);
 	mntmRedo.setMnemonic(KeyEvent.VK_R);
 	mntmUndo.setMnemonic(KeyEvent.VK_U);
 	mntmQuit.setMnemonic(KeyEvent.VK_Q);
@@ -157,18 +145,12 @@ class View extends Frame {
 	mnFile.setMnemonic(KeyEvent.VK_F);
 	mntmRefresh.setMnemonic(KeyEvent.VK_R)
 	mntmDelete.setMnemonic(KeyEvent.VK_D)
-	mntmRemove.setMnemonic(KeyEvent.VK_M)
-	mntmAdd.setMnemonic(KeyEvent.VK_A)
-
-	mntmAdd.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK));
-	mntmRemove.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK));
+	
 	mntmDelete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_MASK));
 	mntmRefresh.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
 	mntmQuit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, InputEvent.ALT_MASK));
 	mntmGroup.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK));
 	mntmHelp.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
-	mntmPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK));
-	mntmCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
 	mntmRedo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, InputEvent.CTRL_MASK));
 	mntmUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK));
 	mntmSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
@@ -177,7 +159,7 @@ class View extends Frame {
 	
 	springLayout.putConstraint(SpringLayout.EAST, leftup, 200, SpringLayout.WEST, panel);
 	springLayout.putConstraint(SpringLayout.NORTH, leftup, 0, SpringLayout.SOUTH, menu);
-	springLayout.putConstraint(SpringLayout.SOUTH, leftup, 375, SpringLayout.NORTH, panel);
+	springLayout.putConstraint(SpringLayout.SOUTH, leftup, 625, SpringLayout.NORTH, panel);
 	springLayout.putConstraint(SpringLayout.WEST, leftup, 0, SpringLayout.WEST, panel);
 
 	springLayout.putConstraint(SpringLayout.NORTH, leftdown, 0, SpringLayout.SOUTH, leftup);
@@ -205,6 +187,11 @@ class View extends Frame {
 	sl_leftup.putConstraint(SpringLayout.SOUTH, sp_overview, 0, SpringLayout.SOUTH, leftup);
 	sl_leftup.putConstraint(SpringLayout.EAST, sp_overview, 0, SpringLayout.EAST, leftup);
 	
+	sl_right.putConstraint(SpringLayout.NORTH, sp_relation, 0, SpringLayout.SOUTH, annotation);
+	sl_right.putConstraint(SpringLayout.WEST, sp_relation, 0, SpringLayout.WEST, right);
+	sl_right.putConstraint(SpringLayout.SOUTH, sp_relation, 0, SpringLayout.NORTH, btnPlay);
+	sl_right.putConstraint(SpringLayout.EAST, sp_relation, 0, SpringLayout.EAST, right);
+	
 	sl_name.putConstraint(SpringLayout.NORTH, lblName, 5, SpringLayout.NORTH, annotation);
 	sl_name.putConstraint(SpringLayout.SOUTH, lblName, 25, SpringLayout.NORTH, annotation);
 	sl_name.putConstraint(SpringLayout.WEST, lblName, 0, SpringLayout.WEST, annotation);
@@ -229,30 +216,28 @@ class View extends Frame {
 	panel.add(leftdown);
 	panel.add(sp_mid)
 	leftup.add(sp_overview)
+	right.add(sp_relation)
 	annotation.add(lblName);
 	leftup.add(lblOverview);
 	annotation.add(name);
 	leftdown.add(lblTools);
 	right.add(annotation);
-	
-	overview.add(lblJPG)
-	overview.add(contentjpg)
-	overview.add(lblPDF)
-	overview.add(contentpdf)
-	overview.add(lblMP4)
-	overview.add(contentmp4)
-	overview.add(lblRelations)
-	overview.add(contentrelations)
 
 	annotation.setVisible(false)
+	btnPlay.setVisible(false)
+	btnSave.setVisible(false)
+	btnCancel.setVisible(false)
+	sp_relation.setVisible(false)
 
 	menu.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 0, Color.BLACK));
 	panel.setBackground(Color.WHITE)
-	sp_overview.setBackground(Color.LIGHT_GRAY)
 	sp_overview.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 0, Color.BLACK));
+	sp_relation.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 0, Color.BLACK));
 	sp_mid.setBorder(BorderFactory.createCompoundBorder(new LineBorder(Color.DARK_GRAY, 1), BorderFactory.createLoweredBevelBorder()));
 	leftup.setBackground(Color.LIGHT_GRAY);
 	overview.setBackground(Color.LIGHT_GRAY);
+	relation.setBackground(Color.LIGHT_GRAY)
+	sp_relation.setBackground(Color.LIGHT_GRAY)
 	leftup.setBorder(new LineBorder(Color.DARK_GRAY, 2));
 	right.setBorder(new LineBorder(Color.DARK_GRAY, 2));
 	right.setBackground(Color.LIGHT_GRAY);
@@ -280,6 +265,21 @@ class View extends Frame {
 	sl_leftdown.putConstraint(SpringLayout.WEST, btnList, 0, SpringLayout.WEST, leftdown);
 	sl_leftdown.putConstraint(SpringLayout.EAST, btnList, 0, SpringLayout.EAST, leftdown);
 	leftdown.add(btnList);
+	
+	sl_right.putConstraint(SpringLayout.SOUTH, btnCancel, -10, SpringLayout.SOUTH, right);
+	sl_right.putConstraint(SpringLayout.WEST, btnCancel, 0, SpringLayout.WEST, right);
+	sl_right.putConstraint(SpringLayout.EAST, btnCancel, 0, SpringLayout.EAST, right);
+	right.add(btnCancel);
+	
+	sl_right.putConstraint(SpringLayout.SOUTH, btnSave, 0, SpringLayout.NORTH, btnCancel);
+	sl_right.putConstraint(SpringLayout.WEST, btnSave, 0, SpringLayout.WEST, right);
+	sl_right.putConstraint(SpringLayout.EAST, btnSave, 0, SpringLayout.EAST, right);
+	right.add(btnSave);
+	
+	sl_right.putConstraint(SpringLayout.SOUTH, btnPlay, 0, SpringLayout.NORTH, btnSave);
+	sl_right.putConstraint(SpringLayout.WEST, btnPlay, 0, SpringLayout.WEST, right);
+	sl_right.putConstraint(SpringLayout.EAST, btnPlay, 0, SpringLayout.EAST, right);
+	right.add(btnPlay);
 	
 	contents = Component.wrap(panel)
 	

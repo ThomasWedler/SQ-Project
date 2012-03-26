@@ -2,14 +2,17 @@ package gui
 
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
-
+import java.awt.event.MouseEvent
+import java.awt.event.MouseListener
+import java.awt.Color
+import scala.collection.mutable.ListBuffer
 import basic.Import
-import function.Chris
+import basic.Annotation
+import javax.swing.border.LineBorder
 import javax.swing.undo.UndoManager
-import javax.swing._
 import javax.swing.JLabel
-import javax.swing.JPanel
-
+import javax.swing.JOptionPane
+import java.io.File
 
 // Verwaltung der darzustellenden Daten
 
@@ -22,7 +25,7 @@ class Control {
   
   var undomanager = new UndoManager
   undomanager.setLimit(1000)
-  
+    
   refresh
   
   view.name.getDocument().addUndoableEditListener(undomanager)
@@ -30,28 +33,36 @@ class Control {
   // menu item group
   view.mntmGroup.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
-		setAnnotationPanel("Group")
+	    refresh
+		setAnnotationPanel("Group", true)
+	 	addLabels(false) 
 	  }
   })
   
   // menu item list
   view.mntmList.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
-		 setAnnotationPanel("Playlist")
+	    refresh
+		setAnnotationPanel("List", true)
+		addLabels(false)
 	  }
   })
   
   // button group
   view.btnGroup.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
-		setAnnotationPanel("Group")
+	    refresh
+		setAnnotationPanel("Group", true)
+		addLabels(false)
 	  }
   })
   
   // button list
   view.btnList.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
-		 setAnnotationPanel("Playlist")
+	    refresh
+		setAnnotationPanel("List", true)
+		addLabels(false)
 	  }
   })
   
@@ -111,38 +122,159 @@ class Control {
 	  }
   })
   
+  // cancel button in relation mode
+  view.btnCancel.addActionListener( new ActionListener {
+	  def actionPerformed(e:ActionEvent) {
+	    refresh
+	    setAnnotationPanel(null, false)
+	  }
+  })
+  
+  // save relation
+  view.btnSave.addActionListener( new ActionListener {
+	  def actionPerformed(e:ActionEvent) {
+		  var list = convertToFilelist(model.relationList.toList)
+		  new Annotation(view.lblName.getText, view.name.getText, list)
+		  refresh
+		  setAnnotationPanel(null, false)
+	  }
+  })
+  
+  // save relation
+  view.mntmSave.addActionListener( new ActionListener {
+	  def actionPerformed(e:ActionEvent) {
+		  var list = convertToFilelist(model.relationList.toList)
+		  new Annotation(view.lblName.getText, view.name.getText, list)
+		  refresh
+		  setAnnotationPanel(null, false)
+	  }
+  })
+  
   // refreshes the ui
   def refresh {
-	  addLabels
+	  addLabels(true)
 	  addOverviewLabels
 	  view.panel.updateUI
   }
     
   // adds the from the filesystem created labels to the mid panel
-  def addLabels {
+  def addLabels(enabled: Boolean) {
     var list = model.getImageList
     view.mid.removeAll
-    for (i <- list)
+    for (i <- list) {
+      if (!enabled) {
+        i.disable()
+        addMouseListenerEnabled(i)
+      } else {
+        if (!i.getText().isEmpty())
+        	addMouseListenerBorder(i)
+      }
       view.mid.add(i)
+    }
     model.imageList = list
   }
   
   // adds the name of the from the filesystem created labels to the overview panel
   def addOverviewLabels {
     var list = model.getOverviewList
-    view.overview.removeAll()
+    view.overview.removeAll
     for (i <- list) {
-    	view.overview.add(new JLabel(i.getText()))
+    	view.overview.add(new JLabel(i.getText))
     }
     model.overviewList = list
   }
   
+  // adds the name of the labels to the new relation list
+  def addRelationLabels(str: String) {
+    var list = model.getRelationList
+    if (str.equals("Group:")) {
+      var l = new ListBuffer[JLabel]
+      l += new JLabel("")
+      for (i <- model.imageList) {
+        if (i.isEnabled)
+          l += i
+      }
+      model.relationList = l
+      list = model.fill(l.toList, 26)
+    }
+    view.relation.removeAll
+    for (i <- list) {
+      view.relation.add(new JLabel(i.getText))
+    }
+  }
+  
   // sets the annotation panel right
-  def setAnnotationPanel(s: String) {
-    	view.annotation.setVisible(true)
+  def setAnnotationPanel(s: String, enabled: Boolean) {
+	  	if (enabled)
+	  		view.annotation.setVisible(true)
+	  	else
+	  		view.annotation.setVisible(false)
     	view.lblName.setText(s + ":")
     	view.name.setText("New " + s)
     	view.name.requestFocus
+    	if (view.annotation.isVisible()) {
+    	    view.relation.removeAll
+    		view.mntmRefresh.setEnabled(false)
+    		view.btnPlay.setVisible(true)
+    		view.btnSave.setVisible(true)
+    		view.btnCancel.setVisible(true)
+    		view.sp_relation.setVisible(true)
+    		model.relationList = new ListBuffer[JLabel]
+    	    model.relationList += new JLabel("")
+    	} else {
+    		view.mntmRefresh.setEnabled(true)
+    		view.btnPlay.setVisible(false)
+    		view.btnSave.setVisible(false)
+    		view.btnCancel.setVisible(false)
+    		view.sp_relation.setVisible(false)
+    	}
+  }
+  
+  // adds a mouse listener to a jlabel in the relation mode, that turns them en-/disabled
+  def addMouseListenerEnabled(label: JLabel) {
+    label.addMouseListener( new MouseListener {
+		  def mouseClicked(e:MouseEvent) {
+		    if (!label.isEnabled()) {
+		    	label.setEnabled(true)
+		    } else {
+		    	label.setEnabled(false)
+		    }
+		    addRelationLabels(view.lblName.getText())
+		    view.panel.updateUI
+		  }
+		  def mouseExited (e: MouseEvent) {}
+		  def mouseEntered (e: MouseEvent) {}
+		  def mouseReleased (e: MouseEvent) {}
+		  def mousePressed (e: MouseEvent) {}
+	    })
+  }
+  
+  // adds a mouse listener to a jlabel in the non relation mode, that marks them with borders [focusable]
+  def addMouseListenerBorder(label: JLabel) {
+    label.addMouseListener( new MouseListener {
+		  def mouseClicked(e:MouseEvent) {
+		    if (!label.isFocusable()) {
+			  label.setBorder(new LineBorder(Color.BLUE, 1))
+			  label.setFocusable(true)
+		    } else {
+			  label.setBorder(new LineBorder(Color.BLUE, 0))
+			  label.setFocusable(false)
+		    }
+		  }
+		  def mouseExited (e: MouseEvent) {}
+		  def mouseEntered (e: MouseEvent) {}
+		  def mouseReleased (e: MouseEvent) {}
+		  def mousePressed (e: MouseEvent) {}
+	    })
+  }
+  
+  def convertToFilelist(list: List[JLabel]) = {
+    var newList = new ListBuffer[File]
+    for (l <- list) {
+    	if (!l.getText.isEmpty)
+    		newList += new File ("filesystem/" + l.getText.substring(l.getText.length-3, l.getText.length) + "/" + l.getText)
+    }
+    newList.toList
   }
   
 }

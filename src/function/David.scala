@@ -45,7 +45,7 @@ package function
       return 1
     }
 
-    def main(args: Array[String]) {
+    def main(args: List[String]) {
       val fc = new FileChooser()
       println(getType(fc.selectedFile))
     }
