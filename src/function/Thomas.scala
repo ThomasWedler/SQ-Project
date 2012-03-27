@@ -80,8 +80,8 @@ class Thomas {
 	def walkthrough() = {
 	  var list = new ListBuffer[File]
 	  	for (f <- new File("filesystem/").listFiles) {
-	  	  if (f.listFiles != null) {
-		    for (file <- f.listFiles) {
+	  	  if (f.listFiles != null && !f.getName.equals("thumbnails")) {
+	  	    for (file <- f.listFiles) {
 		      if (checkType(file))
 		        list += file
 		    }

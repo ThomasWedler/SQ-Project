@@ -13,12 +13,14 @@ import java.awt.event.MouseListener
 import java.awt.event.MouseEvent
 import java.awt.Dimension
 import javax.swing.border.LineBorder
+import optional.Thumbnails
 
 // verwaltet die darzustellenden Daten
 
 class Model {
   
   var thomas = new Thomas
+  var thumbnail = new Thumbnails
   
   var imageList = getImageList
   var overviewList = getOverviewList
@@ -47,15 +49,28 @@ class Model {
   def getImageList = {
 	  var list = new ListBuffer[JLabel]
 	  var filesystem = thomas.walkthrough
-	  for (f <- filesystem) {
-	    var name = shorten(f.getName(), 18)
-	    var image = new ImageIcon("src/resources/Vlc.png")
-	    var label = new JLabel(name, image, Alignment.Center.id)
-	    label.setVerticalTextPosition(Alignment.Bottom.id)
-	    label.setHorizontalTextPosition(Alignment.Center.id)
-	    label.setFocusable(false)
-	    list += label
+	  if (!filesystem.isEmpty) {
+		  for (f <- filesystem) {
+		    var name = shorten(f.getName(), 18)
+		    var image = new ImageIcon("src/resources/Vlc.png")
+		    if (!thumbnail.isThumb(f.getName))
+		    	thumbnail.mkThumb(f.getName)
+		    if (!thomas.getType(f).equals("txt")) {
+		      println(thomas.getType(f))
+		    	println("h " + image.getIconHeight() + " w " + image.getIconWidth())
+		    	image = new ImageIcon(thumbnail.getThumb(f.getName))
+		    	println("h " + image.getIconHeight() + " w " + image.getIconWidth())
+		    }
+		    println("vorher")
+		    var label = new JLabel(name, image, Alignment.Center.id)
+		    println("nachher")
+		    label.setVerticalTextPosition(Alignment.Bottom.id)
+		    label.setHorizontalTextPosition(Alignment.Center.id)
+		    label.setFocusable(false)
+		    list += label
+		  }
 	  }
+	  println("erg")
 	  fill(list.toList, 36)
   }
   

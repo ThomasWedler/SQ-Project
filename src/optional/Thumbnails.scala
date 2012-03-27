@@ -23,16 +23,18 @@ class Thumbnails {
   def isThumb(file: String): Boolean= {
     var extension = file.substring(file.lastIndexOf(".") + 1)
     var path = "filesystem/thumbnails/"
-    var thumbnailFile: File = null
+    var thumbnailFile: File = new File("")
     if (extension == "jpg") {
       path = path + "jpg/"
-      var thumbnailFile:  File = new File(path + file)
+      thumbnailFile = new File(path + file)
     } else if (extension == "pdf") {
       path = path + "pdf/"
-      var thumbnailFile:  File = new File(path + file)
+      thumbnailFile = new File(path + file)
     } else if (extension == "mp4") {
       path = path + "mp4/"
-      var thumbnailFile:  File = new File(path + file)
+      thumbnailFile = new File(path + file)
+    } else if (extension == "txt") {
+      return true
     }
     return thumbnailFile.exists
   }
@@ -41,13 +43,14 @@ class Thumbnails {
   def getThumb(file: String): String= {
     var extension = file.substring(file.lastIndexOf(".") + 1)
     var path = "filesystem/thumbnails/"
-    var thumbnailFile = null
+    var thumbnailFile = ""
     if (extension == "jpg") {
-      var thumbnailFile = path + file
+      path = path + "jpg/"
+      thumbnailFile = path + file
     } else if (extension == "pdf") {
-      var thumbnailFile = path + "pdf/" + file.split('.').init :+ "jpg" mkString "."
+      thumbnailFile = path + "pdf/" + file.split('.').init :+ "jpg" mkString "."
     } else if (extension == "mp4") {
-      var thumbnailFile = path + "mp4/" + file.split('.').init :+ "jpg" mkString "."
+      thumbnailFile = path + "mp4/" + file.split('.').init :+ "jpg" mkString "."
     }
     return thumbnailFile
   }
@@ -58,7 +61,7 @@ class Thumbnails {
     var thumbHeight: Int = 100
     var extension = file.substring(file.lastIndexOf(".") + 1)
     var image: Image = null
-    var thumbnailFile: String = null
+    var thumbnailFile: String = ""
     
     // Generate thumbnail of a JPEG-file
     if (extension == "jpg") {
@@ -123,9 +126,8 @@ class Thumbnails {
     graphics2D.fillRect(0, 0, thumbWidth, thumbHeight)
     graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
     graphics2D.drawImage(image, 0, 0, thumbWidth, thumbHeight, null)
-      
+
     javax.imageio.ImageIO.write(thumbImage, "jpg", new File(thumbnailFile));
-    
     
   }
 }

@@ -18,7 +18,10 @@ object Main {
     var pdf = new File("filesystem/pdf")
     var mp4 = new File("filesystem/mp4")
     var txt = new File("filesystem/relations")
-    if (!jpg.exists || !pdf.exists || !mp4.exists || !txt.exists) {
+    var tjpg = new File("filesystem/thumbnails/jpg")
+    var tpdf = new File("filesystem/thumbnails/pdf")
+    var tmp4 = new File("filesystem/thumbnails/mp4")
+    if (!jpg.exists || !pdf.exists || !mp4.exists || !txt.exists || !tjpg.exists || !tpdf.exists || !tmp4.exists) {
 	    if (!jpg.exists)
 	    	jpg.mkdirs
 	    if (!pdf.exists)
@@ -27,6 +30,12 @@ object Main {
 	    	mp4.mkdirs
 	    if (!txt.exists)
 	    	txt.mkdirs
+	    if (!tjpg.exists)
+	    	tjpg.mkdirs
+    	if (!tpdf.exists)
+    		tpdf.mkdirs
+    	if (!tmp4.exists)
+    		tmp4.mkdirs
 	    JOptionPane.showMessageDialog(null, "The filesystem was successfully created.", "Success", JOptionPane.INFORMATION_MESSAGE)
     }
   }

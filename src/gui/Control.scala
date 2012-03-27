@@ -22,6 +22,7 @@ class Control {
   val model = new Model
   
   var chris = new function.Chris
+  var thomas = new function.Thomas
   
   var undomanager = new UndoManager
   undomanager.setLimit(1000)
@@ -33,7 +34,7 @@ class Control {
   // menu item group
   view.mntmGroup.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {	    
-	    JOptionPane.showMessageDialog(null, "Select Items", "Selection", JOptionPane.INFORMATION_MESSAGE)
+	    JOptionPane.showMessageDialog(null, "Please select the items you would like to add to your new group.", "Group", JOptionPane.INFORMATION_MESSAGE)
 	    refresh
 		setAnnotationPanel("Group", true)
 	 	addLabels(false) 
@@ -43,7 +44,7 @@ class Control {
   // menu item list
   view.mntmList.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
-		JOptionPane.showMessageDialog(null, "Select Items", "Selection", JOptionPane.INFORMATION_MESSAGE)
+		JOptionPane.showMessageDialog(null, "Please select the items you would like to add to your new list.", "List", JOptionPane.INFORMATION_MESSAGE)
 	    refresh
 		setAnnotationPanel("List", true)
 		addLabels(false)
@@ -53,7 +54,7 @@ class Control {
   // button group
   view.btnGroup.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
-	    JOptionPane.showMessageDialog(null, "Select Items", "Selection", JOptionPane.INFORMATION_MESSAGE)
+	    JOptionPane.showMessageDialog(null, "Please select the items you would like to add to your new group.", "Group", JOptionPane.INFORMATION_MESSAGE)
 	    refresh
 		setAnnotationPanel("Group", true)
 		addLabels(false)
@@ -63,7 +64,7 @@ class Control {
   // button list
   view.btnList.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
-	    JOptionPane.showMessageDialog(null, "Select Items", "Selection", JOptionPane.INFORMATION_MESSAGE)
+	    JOptionPane.showMessageDialog(null, "Please select the items you would like to add to your new list.", "List", JOptionPane.INFORMATION_MESSAGE)
 	    refresh
 		setAnnotationPanel("List", true)
 		addLabels(false)
@@ -129,7 +130,6 @@ class Control {
   // cancel button in relation mode
   view.btnCancel.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
-	    view.mntmSave.setEnabled(false)
 	    refresh
 	    setAnnotationPanel(null, false)
 	  }
@@ -138,13 +138,18 @@ class Control {
   // save relation
   view.btnSave.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
-		  val yn =  JOptionPane.showConfirmDialog(null,"Would you like to save this realation?", "Save", JOptionPane.YES_NO_OPTION)
-		  if (yn == JOptionPane.YES_OPTION) {
-		  view.mntmSave.setEnabled(false)
-		  var list = convertToFilelist(model.relationList.toList)
-		  new Annotation(view.lblName.getText, view.name.getText, list)
-		  refresh
-		  setAnnotationPanel(null, false)
+		  var answer = saveQuestion
+		  if (answer.equals("Yes")) {
+		    var result = thomas.overwrite(new File("filesystem/relations/" + view.name.getText + ".txt"))
+		    if (result.equals("Yes")) {
+			  var list = convertToFilelist(model.relationList.toList)
+			  new Annotation(view.lblName.getText, view.name.getText, list)
+			  refresh
+			  setAnnotationPanel(null, false)
+		    }
+		  } else if (answer.equals("No")) {
+			  	refresh
+				setAnnotationPanel(null, false)
 		  }
 	  }
   })
@@ -152,15 +157,41 @@ class Control {
   // save relation
   view.mntmSave.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
-	      view.mntmSave.setEnabled(false)
-		  val yn =  JOptionPane.showConfirmDialog(null,"Would you like to save this realation?", "Save", JOptionPane.YES_NO_OPTION)
-		  if (yn == JOptionPane.YES_OPTION) {
-		      view.mntmSave.setEnabled(false)
+		  var answer = saveQuestion
+		  if (answer.equals("Yes")) {
+		    var result = thomas.overwrite(new File("filesystem/relations/" + view.name.getText + ".txt"))
+		    if (result.equals("Yes")) {
 			  var list = convertToFilelist(model.relationList.toList)
 			  new Annotation(view.lblName.getText, view.name.getText, list)
 			  refresh
 			  setAnnotationPanel(null, false)
-		  }		  
+		    }
+		  } else if (answer.equals("No")) {
+			  	refresh
+				setAnnotationPanel(null, false)
+		  }
+	  }
+  })
+  
+  // delete file
+  view.mntmDelete.addActionListener( new ActionListener {
+	  def actionPerformed(e:ActionEvent) {
+	    var result = deleteQuestion
+	    if (result.equals("Yes")) {
+		    var file = new File("")
+		    var bool = false
+			  for (i <- model.imageList) {
+				  if (i.isFocusable()) {
+				    file = new File("filesystem/" + i.getText.substring(i.getText.length-3, i.getText.length) + "/" + i.getText)
+				    model.imageList.remove(i => bool: Boolean)
+				  }
+			  }
+		    for (f <- thomas.walkthrough()) {
+		      if (thomas.checkName(f, file))
+		        f.delete()
+		    }
+		    refresh
+	    }
 	  }
   })
   
@@ -182,6 +213,8 @@ class Control {
       } else {
         if (!i.getText().isEmpty())
         	addMouseListenerBorder(i)
+        else
+        	addMouseListenerDeselect(i)
       }
       view.mid.add(i)
     }
@@ -236,12 +269,16 @@ class Control {
     		view.sp_relation.setVisible(true)
     		model.relationList = new ListBuffer[JLabel]
     	    model.relationList += new JLabel("")
+    	    view.mntmSave.setEnabled(true)
+    	    view.mntmPlayRelation.setEnabled(true)
     	} else {
     		view.mntmRefresh.setEnabled(true)
     		view.btnPlay.setVisible(false)
     		view.btnSave.setVisible(false)
     		view.btnCancel.setVisible(false)
     		view.sp_relation.setVisible(false)
+    		view.mntmSave.setEnabled(false)
+    	    view.mntmPlayRelation.setEnabled(false)
     	}
   }
   
@@ -268,12 +305,38 @@ class Control {
   def addMouseListenerBorder(label: JLabel) {
     label.addMouseListener( new MouseListener {
 		  def mouseClicked(e:MouseEvent) {
+		    for (i <- model.imageList) {
+		      if (i.isFocusable()) {
+		        view.mntmPlay.setEnabled(false)
+		        view.mntmDelete.setEnabled(false)
+		        i.setBorder(new LineBorder(Color.BLUE, 0))
+		        i.setFocusable(false)
+		      }
+		    }
 		    if (!label.isFocusable()) {
+		      view.mntmPlay.setEnabled(true)
+		      view.mntmDelete.setEnabled(true)
 			  label.setBorder(new LineBorder(Color.BLUE, 1))
 			  label.setFocusable(true)
-		    } else {
-			  label.setBorder(new LineBorder(Color.BLUE, 0))
-			  label.setFocusable(false)
+		    }
+		  }
+		  def mouseExited (e: MouseEvent) {}
+		  def mouseEntered (e: MouseEvent) {}
+		  def mouseReleased (e: MouseEvent) {}
+		  def mousePressed (e: MouseEvent) {}
+	    })
+  }
+  
+   def addMouseListenerDeselect(label: JLabel) {
+    label.addMouseListener( new MouseListener {
+		  def mouseClicked(e:MouseEvent) {
+		    for (i <- model.imageList) {
+		      if (i.isFocusable()) {
+		        view.mntmPlay.setEnabled(false)
+		        view.mntmDelete.setEnabled(false)
+		        i.setBorder(new LineBorder(Color.BLUE, 0))
+		        i.setFocusable(false)
+		      }
 		    }
 		  }
 		  def mouseExited (e: MouseEvent) {}
@@ -290,6 +353,30 @@ class Control {
     		newList += new File ("filesystem/" + l.getText.substring(l.getText.length-3, l.getText.length) + "/" + l.getText)
     }
     newList.toList
+  }
+  
+  def saveQuestion = {
+	  var result = "none"
+	    var options: Array[Object] = Array("Cancel", "No", "Yes")
+		var selected = JOptionPane.showOptionDialog(null, "Do you like to save your current relation?", "Save", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options(1))
+		if (selected == 0)
+			result = "Cancel"
+		if (selected == 1)
+			result = "No"
+		if (selected == 2)
+			result = "Yes"
+	  result
+	}
+  
+  def deleteQuestion = {
+    var result = "none"
+	    var options: Array[Object] = Array("No", "Yes")
+		var selected = JOptionPane.showOptionDialog(null, "Do you really want to delete the selected file from the filesystem?", "Delete", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options(0))
+		if (selected == 0)
+			result = "No"
+		if (selected == 1)
+			result = "Yes"
+	  result
   }
   
 }
