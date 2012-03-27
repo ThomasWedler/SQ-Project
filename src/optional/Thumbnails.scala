@@ -7,6 +7,15 @@ import java.awt.Graphics2D
 import java.awt.Color
 import java.awt.RenderingHints
 
+// "PDFRenderer only deals with up to version 1.4 of the PDF spec. The current version is 1.6, and there have been quite a few additions and changes between 1.4 and 1.6 which seem to break PDFRenderer."
+import com.sun.pdfview.PDFFile
+import com.sun.pdfview.PDFPage
+
+import java.io.RandomAccessFile
+import java.nio.channels.FileChannel
+import java.nio.ByteBuffer
+import java.awt.Rectangle
+
 class Thumbnails {
   // Check if thumbnail exists (file is just the filename and NOT path and filename...)
   def isThumb(file: String): Boolean= {
@@ -47,6 +56,7 @@ class Thumbnails {
     var thumbHeight: Int = 100
     var extension = file.substring(file.lastIndexOf(".") + 1)
     
+    // Generate thumbnail of a JPEG-file
     if (extension == "jpg") {
       val path = "filesystem/jpg/"
       var filename = path + file
@@ -83,10 +93,57 @@ class Thumbnails {
       graphics2D.drawImage(image, 0, 0, thumbWidth, thumbHeight, null)
         
       javax.imageio.ImageIO.write(thumbImage, "jpg", new File(thumbnailFile));
+
+    // Generate thumbnail of a PDF-file
     } else if (extension == "pdf") {
       val path = "filesystem/pdf/"
       var filename = path + file
-      var thumbnailFile = "filesystem/thumbnails/pdf/" + file.split('.').init :+ "jpg" mkString "."      
+      var thumbnailFile = "filesystem/thumbnails/pdf/" + file.split('.').init :+ "jpg" mkString "."
+      
+      var pdffilename: File = new File(filename)
+      var raf: RandomAccessFile = new RandomAccessFile(pdffilename, "r")
+      var channel: FileChannel = raf.getChannel()
+      var buf: ByteBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
+      var pdffile: PDFFile = new PDFFile(buf)
+      
+      // draw first page to an image
+      var page: PDFPage = pdffile.getPage(0)
+      
+      //get width and height for the doc at the default zoom
+      var rect: Rectangle = new Rectangle(0,0,page.getBBox().getWidth().toInt, page.getBBox().getHeight().toInt)
+      
+      //generate image
+      var image: Image = page.getImage(rect.width, rect.height, rect, null, true, true)
+      
+      var thumbRatio: Double = thumbWidth.toDouble/thumbHeight.toDouble
+      var imageWidth: Int = image.getWidth(null)
+      var imageHeight: Int = image.getHeight(null)
+      var imageRatio: Double = imageWidth.toDouble/imageHeight.toDouble
+        
+      if (thumbRatio < imageRatio){
+        thumbHeight = (thumbWidth/imageRatio).toInt      
+      } else {
+        thumbWidth = (thumbHeight*imageRatio).toInt      
+      }
+      
+      if (imageWidth < thumbWidth && imageHeight < thumbHeight){
+        thumbWidth = imageWidth
+        thumbHeight = imageHeight;     
+      } else if (imageWidth < thumbWidth) {
+        thumbWidth = imageWidth
+      } else if (imageHeight < thumbHeight) {
+        thumbHeight = imageHeight
+      }
+      
+      var thumbImage: BufferedImage = new BufferedImage(thumbWidth, thumbHeight, BufferedImage.TYPE_INT_RGB)
+      var graphics2D: Graphics2D = thumbImage.createGraphics()
+      graphics2D.setBackground(Color.WHITE)
+      graphics2D.setPaint(Color.WHITE)
+      graphics2D.fillRect(0, 0, thumbWidth, thumbHeight)
+      graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
+      graphics2D.drawImage(image, 0, 0, thumbWidth, thumbHeight, null)
+        
+      javax.imageio.ImageIO.write(thumbImage, "jpg", new File(thumbnailFile));
     } else if (extension == "mp4") {
       val path = "filesystem/mp4/"
       var filename = path + file
