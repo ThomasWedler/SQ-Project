@@ -13,6 +13,11 @@ import javax.swing.undo.UndoManager
 import javax.swing.JLabel
 import javax.swing.JOptionPane
 import java.io.File
+import java.io.BufferedReader
+import java.io.FileReader
+import javax.swing.JFileChooser
+import javax.swing.filechooser.FileNameExtensionFilter
+import javax.swing.BorderFactory
 
 // Verwaltung der darzustellenden Daten
 
@@ -141,7 +146,7 @@ class Control {
 		  var answer = saveQuestion
 		  if (answer.equals("Yes")) {
 		    var result = thomas.overwrite(new File("filesystem/relations/" + view.name.getText + ".txt"))
-		    if (result.equals("Yes")) {
+		    if (result.equals("Yes") || result.equals("none")) {
 			  var list = convertToFilelist(model.relationList.toList)
 			  new Annotation(view.lblName.getText, view.name.getText, list)
 			  refresh
@@ -160,7 +165,7 @@ class Control {
 		  var answer = saveQuestion
 		  if (answer.equals("Yes")) {
 		    var result = thomas.overwrite(new File("filesystem/relations/" + view.name.getText + ".txt"))
-		    if (result.equals("Yes")) {
+		    if (result.equals("Yes") || result.equals("none")) {
 			  var list = convertToFilelist(model.relationList.toList)
 			  new Annotation(view.lblName.getText, view.name.getText, list)
 			  refresh
@@ -195,6 +200,17 @@ class Control {
 	  }
   })
   
+  view.mntmLoad.addActionListener( new ActionListener {
+	  def actionPerformed(e:ActionEvent) {
+	    var fc = new JFileChooser
+		var filter = new FileNameExtensionFilter("TXT", "txt")
+		fc.setFileFilter(filter)
+		fc.setMultiSelectionEnabled(false)
+		fc.showOpenDialog(null)
+		loadRelation(fc.getSelectedFile)
+	  }
+  })
+  
   // refreshes the ui
   def refresh {
 	  addLabels(true)
@@ -211,7 +227,7 @@ class Control {
         i.disable()
         addMouseListenerEnabled(i)
       } else {
-        if (!i.getText().isEmpty())
+        if (!i.getText.isEmpty)
         	addMouseListenerBorder(i)
         else
         	addMouseListenerDeselect(i)
@@ -226,7 +242,10 @@ class Control {
     var list = model.getOverviewList
     view.overview.removeAll
     for (i <- list) {
-    	view.overview.add(new JLabel(i.getText))
+      var label = new JLabel(i.getText)
+      if (!i.getText.isEmpty && i.getText.substring(i.getText.length-3, i.getText.length).equals("txt"))
+    	  addMouseListenerLoad(label)
+      view.overview.add(label)
     }
     model.overviewList = list
   }
@@ -305,6 +324,31 @@ class Control {
   def addMouseListenerBorder(label: JLabel) {
     label.addMouseListener( new MouseListener {
 		  def mouseClicked(e:MouseEvent) {
+		    if (e.getClickCount == 2) {
+		      if (label.getText.substring(label.getText.length-3, label.getText.length).equals("txt")) {
+		    	  var file = new File("")
+		    	  var name = label.getText
+		    	  for (f <- thomas.walkthrough) {
+		    		  if (f.getName.equals(name))
+		    			  file = f
+		    	  }
+		    	  loadRelation(file)
+			  }
+			  var list = model.getOverviewList
+			  for (l <- list) {
+			    if (!l.getText.equals("") && l.getText.substring(5, l.getText.length).equals(" " + label.getText)) {
+			    	l.setText("<html><body>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"background-color: #87CEFA\";><b>" + l.getText + "</b></span></body></html>")
+			    }
+			  }
+		      	view.overview.removeAll
+			    for (i <- list) {
+			      var label = new JLabel(i.getText)
+			      if (!i.getText.isEmpty && i.getText.substring(i.getText.length-3, i.getText.length).equals("txt"))
+			    	  addMouseListenerLoad(label)
+			      view.overview.add(label)
+			    }
+			    model.overviewList = list
+		    }
 		    for (i <- model.imageList) {
 		      if (i.isFocusable()) {
 		        view.mntmPlay.setEnabled(false)
@@ -316,7 +360,7 @@ class Control {
 		    if (!label.isFocusable()) {
 		      view.mntmPlay.setEnabled(true)
 		      view.mntmDelete.setEnabled(true)
-			  label.setBorder(new LineBorder(Color.BLUE, 1))
+			  label.setBorder(new LineBorder(Color.DARK_GRAY, 1))
 			  label.setFocusable(true)
 		    }
 		  }
@@ -377,6 +421,43 @@ class Control {
 		if (selected == 1)
 			result = "Yes"
 	  result
+  }
+  
+  def loadRelation(f: File) = {
+    var br = new BufferedReader(new FileReader(f))
+    var list = new ListBuffer[String]
+    var zeile = br.readLine()
+	while (zeile != null) {
+		list += zeile
+		zeile = br.readLine()
+	}
+	setAnnotationPanel(list.first, true)
+	view.name.setText(f.getName.substring(0, f.getName.length-4))
+	addLabels(false)
+	for (i <- model.imageList) {
+	  if (list.contains(i.getText))
+	    i.setEnabled(true)
+	}
+	addRelationLabels(list.first)
+  }
+  
+   def addMouseListenerLoad(label: JLabel) {
+    label.addMouseListener( new MouseListener {
+		  def mouseClicked(e:MouseEvent) {
+			  var file = new File("")
+			  var name = label.getText.substring(6, label.getText.length)
+			  for (f <- thomas.walkthrough) {
+			    if (f.getName.equals(name))
+			      file = f
+			  }
+			  loadRelation(file)
+			  label.setText("<html><body>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"background-color: #87CEFA\";><b>" + label.getText + "</b></span></body></html>")
+		  }
+		  def mouseExited (e: MouseEvent) {}
+		  def mouseEntered (e: MouseEvent) {}
+		  def mouseReleased (e: MouseEvent) {}
+		  def mousePressed (e: MouseEvent) {}
+	    })
   }
   
 }

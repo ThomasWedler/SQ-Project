@@ -51,35 +51,22 @@ class Model {
 	  var filesystem = thomas.walkthrough
 	  if (!filesystem.isEmpty) {
 		  for (f <- filesystem) {
-		    var name = shorten(f.getName(), 18)
 		    var image = new ImageIcon("src/resources/Vlc.png")
 		    if (!thumbnail.isThumb(f.getName))
 		    	thumbnail.mkThumb(f.getName)
 		    if (!thomas.getType(f).equals("txt")) {
-		      println(thomas.getType(f))
-		    	println("h " + image.getIconHeight() + " w " + image.getIconWidth())
 		    	image = new ImageIcon(thumbnail.getThumb(f.getName))
-		    	println("h " + image.getIconHeight() + " w " + image.getIconWidth())
-		    }
-		    println("vorher")
-		    var label = new JLabel(name, image, Alignment.Center.id)
-		    println("nachher")
+		    } 
+		    var label = new JLabel(f.getName, image, Alignment.Center.id)
+		    var labelLong = new JLabel(f.getName)
 		    label.setVerticalTextPosition(Alignment.Bottom.id)
 		    label.setHorizontalTextPosition(Alignment.Center.id)
 		    label.setFocusable(false)
+		    label.setPreferredSize(new Dimension(100, label.getHeight()))
 		    list += label
 		  }
 	  }
-	  println("erg")
 	  fill(list.toList, 36)
-  }
-  
-  // shortens a string if it has more than a given number of chars
-  def shorten(s: String, lenght: Int) = {
-    var result = s
-	if (s.length() > lenght)
-		result = s.substring(0, lenght-2) + "..."
-	result
   }
   
   // if the list is smaller than a given number of items, it fills the empty cells with labels
@@ -112,7 +99,7 @@ class Model {
 	list += new JLabel(name)
 	for (f <- filesystem) {
 	  if (thomas.getType(f).equals(s)) {
-		  list += new JLabel("      " + shorten(f.getName, 20))
+		  list += new JLabel("      " + f.getName)
 		  counter += 1
 	  }
 	}

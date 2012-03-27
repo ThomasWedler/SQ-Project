@@ -192,7 +192,7 @@ class View extends Frame {
 	
 	sl_right.putConstraint(SpringLayout.NORTH, sp_relation, 0, SpringLayout.SOUTH, annotation);
 	sl_right.putConstraint(SpringLayout.WEST, sp_relation, 0, SpringLayout.WEST, right);
-	sl_right.putConstraint(SpringLayout.SOUTH, sp_relation, 0, SpringLayout.NORTH, btnPlay);
+	sl_right.putConstraint(SpringLayout.SOUTH, sp_relation, -10, SpringLayout.NORTH, btnPlay);
 	sl_right.putConstraint(SpringLayout.EAST, sp_relation, 0, SpringLayout.EAST, right);
 	
 	sl_name.putConstraint(SpringLayout.NORTH, lblName, 5, SpringLayout.NORTH, annotation);
