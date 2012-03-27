@@ -32,7 +32,8 @@ class Control {
   
   // menu item group
   view.mntmGroup.addActionListener( new ActionListener {
-	  def actionPerformed(e:ActionEvent) {
+	  def actionPerformed(e:ActionEvent) {	    
+	    JOptionPane.showMessageDialog(null, "Select Items", "Selection", JOptionPane.INFORMATION_MESSAGE)
 	    refresh
 		setAnnotationPanel("Group", true)
 	 	addLabels(false) 
@@ -42,6 +43,7 @@ class Control {
   // menu item list
   view.mntmList.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
+		JOptionPane.showMessageDialog(null, "Select Items", "Selection", JOptionPane.INFORMATION_MESSAGE)
 	    refresh
 		setAnnotationPanel("List", true)
 		addLabels(false)
@@ -51,6 +53,7 @@ class Control {
   // button group
   view.btnGroup.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
+	    JOptionPane.showMessageDialog(null, "Select Items", "Selection", JOptionPane.INFORMATION_MESSAGE)
 	    refresh
 		setAnnotationPanel("Group", true)
 		addLabels(false)
@@ -60,6 +63,7 @@ class Control {
   // button list
   view.btnList.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
+	    JOptionPane.showMessageDialog(null, "Select Items", "Selection", JOptionPane.INFORMATION_MESSAGE)
 	    refresh
 		setAnnotationPanel("List", true)
 		addLabels(false)
@@ -111,7 +115,7 @@ class Control {
   // help contents
   view.mntmHelp.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
-	  	JOptionPane.showMessageDialog(null, "Help Contents are still under development.", "Help Contents", JOptionPane.INFORMATION_MESSAGE);
+		JOptionPane.showMessageDialog(null, "Help Contents are still under development.", "Help Contents", JOptionPane.INFORMATION_MESSAGE);
 	  }
   })
   
@@ -125,6 +129,7 @@ class Control {
   // cancel button in relation mode
   view.btnCancel.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
+	    view.mntmSave.setEnabled(false)
 	    refresh
 	    setAnnotationPanel(null, false)
 	  }
@@ -133,20 +138,29 @@ class Control {
   // save relation
   view.btnSave.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
+		  val yn =  JOptionPane.showConfirmDialog(null,"Would you like to save this realation?", "Save", JOptionPane.YES_NO_OPTION)
+		  if (yn == JOptionPane.YES_OPTION) {
+		  view.mntmSave.setEnabled(false)
 		  var list = convertToFilelist(model.relationList.toList)
 		  new Annotation(view.lblName.getText, view.name.getText, list)
 		  refresh
 		  setAnnotationPanel(null, false)
+		  }
 	  }
   })
   
   // save relation
   view.mntmSave.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
-		  var list = convertToFilelist(model.relationList.toList)
-		  new Annotation(view.lblName.getText, view.name.getText, list)
-		  refresh
-		  setAnnotationPanel(null, false)
+	      view.mntmSave.setEnabled(false)
+		  val yn =  JOptionPane.showConfirmDialog(null,"Would you like to save this realation?", "Save", JOptionPane.YES_NO_OPTION)
+		  if (yn == JOptionPane.YES_OPTION) {
+		      view.mntmSave.setEnabled(false)
+			  var list = convertToFilelist(model.relationList.toList)
+			  new Annotation(view.lblName.getText, view.name.getText, list)
+			  refresh
+			  setAnnotationPanel(null, false)
+		  }		  
 	  }
   })
   
@@ -215,6 +229,7 @@ class Control {
     	if (view.annotation.isVisible()) {
     	    view.relation.removeAll
     		view.mntmRefresh.setEnabled(false)
+    		view.mntmSave.setEnabled(true)
     		view.btnPlay.setVisible(true)
     		view.btnSave.setVisible(true)
     		view.btnCancel.setVisible(true)
