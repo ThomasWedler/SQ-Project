@@ -200,6 +200,7 @@ class Control {
 	  }
   })
   
+  // load relation
   view.mntmLoad.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
 	    var fc = new JFileChooser
@@ -243,8 +244,10 @@ class Control {
     view.overview.removeAll
     for (i <- list) {
       var label = new JLabel(i.getText)
-      if (!i.getText.isEmpty && i.getText.substring(i.getText.length-3, i.getText.length).equals("txt"))
-    	  addMouseListenerLoad(label)
+      if (!i.isFocusable) {
+    	  if (!i.getText.isEmpty && i.getText.substring(i.getText.length-3, i.getText.length).equals("txt"))
+    		  addMouseListenerLoad(label)
+      }
       view.overview.add(label)
     }
     model.overviewList = list
@@ -274,11 +277,11 @@ class Control {
 	  	if (enabled)
 	  		view.annotation.setVisible(true)
 	  	else
-	  		view.annotation.setVisible(false)
+	  	view.annotation.setVisible(false)
     	view.lblName.setText(s + ":")
     	view.name.setText("New " + s)
     	view.name.requestFocus
-    	if (view.annotation.isVisible()) {
+    	if (view.annotation.isVisible) {
     	    view.relation.removeAll
     		view.mntmRefresh.setEnabled(false)
     		view.mntmSave.setEnabled(true)
@@ -289,7 +292,6 @@ class Control {
     		model.relationList = new ListBuffer[JLabel]
     	    model.relationList += new JLabel("")
     	    view.mntmSave.setEnabled(true)
-    	    view.mntmPlayRelation.setEnabled(true)
     	} else {
     		view.mntmRefresh.setEnabled(true)
     		view.btnPlay.setVisible(false)
@@ -297,7 +299,6 @@ class Control {
     		view.btnCancel.setVisible(false)
     		view.sp_relation.setVisible(false)
     		view.mntmSave.setEnabled(false)
-    	    view.mntmPlayRelation.setEnabled(false)
     	}
   }
   
@@ -321,6 +322,7 @@ class Control {
   }
   
   // adds a mouse listener to a jlabel in the non relation mode, that marks them with borders [focusable]
+  // and loads the file on double click
   def addMouseListenerBorder(label: JLabel) {
     label.addMouseListener( new MouseListener {
 		  def mouseClicked(e:MouseEvent) {
@@ -336,18 +338,22 @@ class Control {
 			  }
 			  var list = model.getOverviewList
 			  for (l <- list) {
+			    l.setFocusable(false)
 			    if (!l.getText.equals("") && l.getText.substring(5, l.getText.length).equals(" " + label.getText)) {
 			    	l.setText("<html><body>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"background-color: #87CEFA\";><b>" + l.getText + "</b></span></body></html>")
+			    	l.setFocusable(true)
 			    }
 			  }
-		      	view.overview.removeAll
-			    for (i <- list) {
-			      var label = new JLabel(i.getText)
-			      if (!i.getText.isEmpty && i.getText.substring(i.getText.length-3, i.getText.length).equals("txt"))
-			    	  addMouseListenerLoad(label)
-			      view.overview.add(label)
+		      view.overview.removeAll
+			  for (i <- list) {
+			    var l = new JLabel(i.getText)
+			    if (!i.isFocusable) {
+				    if (!i.getText.isEmpty && i.getText.substring(i.getText.length-3, i.getText.length).equals("txt"))
+				    	addMouseListenerLoad(l)
 			    }
-			    model.overviewList = list
+			    view.overview.add(l)
+			  }
+			  model.overviewList = list
 		    }
 		    for (i <- model.imageList) {
 		      if (i.isFocusable()) {
@@ -371,6 +377,7 @@ class Control {
 	    })
   }
   
+  //  a mouse listener which sets empty borders to focused items in the image list 
    def addMouseListenerDeselect(label: JLabel) {
     label.addMouseListener( new MouseListener {
 		  def mouseClicked(e:MouseEvent) {
@@ -390,6 +397,7 @@ class Control {
 	    })
   }
   
+   // converts a list of jlabels to a list of files
   def convertToFilelist(list: List[JLabel]) = {
     var newList = new ListBuffer[File]
     for (l <- list) {
@@ -399,6 +407,7 @@ class Control {
     newList.toList
   }
   
+  // save question with the answer as return
   def saveQuestion = {
 	  var result = "none"
 	    var options: Array[Object] = Array("Cancel", "No", "Yes")
@@ -412,6 +421,7 @@ class Control {
 	  result
 	}
   
+    // delete question with the answer as return
   def deleteQuestion = {
     var result = "none"
 	    var options: Array[Object] = Array("No", "Yes")
@@ -423,6 +433,7 @@ class Control {
 	  result
   }
   
+  // reads a txt file and adds for each line a label to the relation list
   def loadRelation(f: File) = {
     var br = new BufferedReader(new FileReader(f))
     var list = new ListBuffer[String]
@@ -431,16 +442,62 @@ class Control {
 		list += zeile
 		zeile = br.readLine()
 	}
-	setAnnotationPanel(list.first, true)
-	view.name.setText(f.getName.substring(0, f.getName.length-4))
-	addLabels(false)
-	for (i <- model.imageList) {
-	  if (list.contains(i.getText))
-	    i.setEnabled(true)
-	}
-	addRelationLabels(list.first)
+    var answer = "none"
+    if (view.annotation.isVisible)
+      answer = saveQuestion
+    println(answer)
+    if (answer.equals("Yes")) {
+      var result = thomas.overwrite(new File("filesystem/relations/" + view.name.getText + ".txt"))
+		    if (result.equals("Yes") || result.equals("none")) {
+			  var l = convertToFilelist(model.relationList.toList)
+			  new Annotation(view.lblName.getText, view.name.getText, l)
+			  view.name.setText(f.getName.substring(0, f.getName.length-4))
+			  refreshRelations(list)
+		    }
+    }
+    // macht auch komische sachen
+    if (answer.equals("No") || answer.equals("none")) {
+		setAnnotationPanel(list.first, true)
+		println(view.name.getText)
+		view.name.setText(f.getName.substring(0, f.getName.length-4))
+				println(view.name.getText)
+
+		refreshRelations(list)
+    }
+    // funktioniert nicht ?????
+    if (answer.equals("Cancel")) {
+      var overviewlist = model.overviewList
+			  for (l <- overviewlist) {
+			    l.setFocusable(false)
+			    if (!l.getText.equals("") && l.getText.substring(5, l.getText.length).equals(" " + f.getName)) {
+				  l.setText("<html><body>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"background-color: #87CEFA\";><b>" + f.getName + "</b></span></body></html>")
+				  l.setFocusable(true)
+			    }
+			  }
+			  view.overview.removeAll
+			  for (i <- overviewlist) {
+			    var newlabel = new JLabel(i.getText)
+			    if (!i.isFocusable) {
+				    if (!i.getText.isEmpty && i.getText.substring(i.getText.length-3, i.getText.length).equals("txt")) {
+				    	addMouseListenerLoad(newlabel)
+				    }
+			    }
+			    view.overview.add(newlabel)
+			  }
+			  model.overviewList = overviewlist
+    }
   }
   
+  def refreshRelations(list: ListBuffer[String]) = {
+    addLabels(false)
+		for (i <- model.imageList) {
+		  if (list.contains(i.getText))
+		    i.setEnabled(true)
+		}
+		addRelationLabels(list.first + ":")
+  }
+  
+  // on click find the txt file in the filesystem and load it
    def addMouseListenerLoad(label: JLabel) {
     label.addMouseListener( new MouseListener {
 		  def mouseClicked(e:MouseEvent) {
@@ -451,7 +508,23 @@ class Control {
 			      file = f
 			  }
 			  loadRelation(file)
-			  label.setText("<html><body>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"background-color: #87CEFA\";><b>" + label.getText + "</b></span></body></html>")
+			  var list = model.getOverviewList
+			  for (l <- list) {
+			    if (l.getText.equals(label.getText)) {
+				  l.setText("<html><body>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"background-color: #87CEFA\";><b>" + label.getText + "</b></span></body></html>")
+				  l.setFocusable(true)
+			    }
+			  }
+			  view.overview.removeAll
+			  for (i <- list) {
+			    var l = new JLabel(i.getText)
+			    if (!i.isFocusable) {
+				    if (!i.getText.isEmpty && i.getText.substring(i.getText.length-3, i.getText.length).equals("txt"))
+				    	addMouseListenerLoad(l)
+			    }
+			    view.overview.add(l)
+			  }
+			  model.overviewList = list
 		  }
 		  def mouseExited (e: MouseEvent) {}
 		  def mouseEntered (e: MouseEvent) {}

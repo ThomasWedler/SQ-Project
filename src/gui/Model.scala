@@ -89,7 +89,10 @@ class Model {
     checkContent("  JPG", "jpg", list)
     checkContent("  MP4", "mp4", list)
     checkContent("  PDF", "pdf", list)
-	fill(list.toList, 34)
+	var newlist = fill(list.toList, 34)
+	for (n <- newlist)
+	  n.setFocusable(false)
+	newlist.toList
   }
   
   // checks the filesystem for directory contents and adds them to the overview list
@@ -99,7 +102,8 @@ class Model {
 	list += new JLabel(name)
 	for (f <- filesystem) {
 	  if (thomas.getType(f).equals(s)) {
-		  list += new JLabel("      " + f.getName)
+		  var label = new JLabel("      " + f.getName)
+		  list += label
 		  counter += 1
 	  }
 	}

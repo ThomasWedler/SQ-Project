@@ -89,7 +89,6 @@ class View extends Frame {
 	var mnNew = new JMenu("New Relation")
 	
 	var mntmPlay = new JMenuItem("Play File")
-	var mntmPlayRelation = new JMenuItem("Play Relation")
 	var mntmSave = new JMenuItem("Save Relation")
 	var mntmLoad = new JMenuItem("Load Relation")
 	var mntmOpen = new JMenuItem("Import Files")
@@ -125,7 +124,6 @@ class View extends Frame {
 	mnEdit.add(mntmPlay)
 	mnEdit.add(mntmDelete)
 	mnEdit.add(new JSeparator)
-	mnEdit.add(mntmPlayRelation)
 	mnEdit.add(mntmSave)
 	mnEdit.add(mntmLoad)
 	
@@ -233,7 +231,6 @@ class View extends Frame {
 	sp_relation.setVisible(false)
 	
 	mntmSave.setEnabled(false)
-	mntmPlayRelation.setEnabled(false)
 	mntmPlay.setEnabled(false)
 	mntmDelete.setEnabled(false)
 
