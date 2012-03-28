@@ -17,6 +17,14 @@ import java.nio.ByteBuffer
 import java.awt.Rectangle
 
 // See http://www.capricasoftware.co.uk/vlcj/index.php for requirements and dependencies
+import java.util.concurrent.CountDownLatch
+
+import uk.co.caprica.vlcj.player.MediaPlayer
+import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter
+import uk.co.caprica.vlcj.player.MediaPlayerFactory
+//import uk.co.caprica.vlcj.test.VlcjTest
+
+
 
 class Thumbnails {
   // Check if thumbnail exists (file is just the filename and NOT path and filename...)
@@ -96,7 +104,54 @@ class Thumbnails {
     } else if (extension == "mp4") {
       val path = "filesystem/mp4/"
       var filename = path + file
-      var thumbnailFile = "filesystem/thumbnails/mp4/" + file.split('.').init :+ "jpg" mkString "."      
+      var thumbnailFile = "filesystem/thumbnails/mp4/" + file.split('.').init :+ "jpg" mkString "."
+      
+      // via http://code.google.com/p/vlcj/source/browse/trunk/vlcj/src/test/java/uk/co/caprica/vlcj/test/thumbs/ThumbsTest.java
+      
+      val VLC_THUMBNAIL_POSITION: Float = 30.0f / 100.0f
+      
+      // Set media resource locator
+      val mrl: String = "file://" + filename
+      
+      var factory: MediaPlayerFactory = new MediaPlayerFactory("--intf", "dummy",          /* no interface */
+                                                               "--vout", "dummy",          /* we don't want video (output) */
+                                                               "--no-audio",               /* we don't want audio (decoding) */
+                                                               "--no-video-title-show",    /* nor the filename displayed */
+                                                               "--no-stats",               /* no stats */
+                                                               "--no-sub-autodetect-file", /* we don't want subtitles */
+                                                               "--no-inhibit",             /* we don't want interfaces */
+                                                               "--no-disable-screensaver", /* we don't want interfaces */
+                                                               "--no-snapshot-preview"     /* no blending in dummy vout */)
+      
+      var mediaPlayer: MediaPlayer = factory.newHeadlessMediaPlayer();
+      
+      val inPositionLatch: CountDownLatch = new CountDownLatch(1)
+      val snapshotTakenLatch: CountDownLatch = new CountDownLatch(1)
+      
+      mediaPlayer.addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
+        override def positionChanged(mediaPlayer: MediaPlayer, newPosition: Float) {
+          if(newPosition >= VLC_THUMBNAIL_POSITION * 0.9f) { /* 90% margin */
+            inPositionLatch.countDown()
+          }
+        }
+        
+        override def snapshotTaken(mediaPlayer: MediaPlayer, filename: String) {
+          // Debugging
+          System.out.println("snapshotTaken(filename=" + filename + ")")
+          snapshotTakenLatch.countDown()
+        }
+      })
+      
+      if (mediaPlayer.startMedia(mrl)) {
+        mediaPlayer.setPosition(VLC_THUMBNAIL_POSITION)
+        inPositionLatch.await() // Might wait forever if error
+        image = mediaPlayer.getSnapshot()
+        snapshotTakenLatch.await() // Might wait forever if error
+        mediaPlayer.stop()
+      }
+      
+      mediaPlayer.release()
+      factory.release()
     }
     
     var thumbRatio: Double = thumbWidth.toDouble/thumbHeight.toDouble
