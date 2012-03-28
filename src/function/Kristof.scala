@@ -1,5 +1,0 @@
-package function
-
-class Kristof {
-
-}
