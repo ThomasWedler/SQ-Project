@@ -1,20 +1,16 @@
 /** This package provides optional features to SQ-Project */
 package optional
 
-import java.awt.Image
 import java.io.File
 import java.awt.image.BufferedImage
-import java.awt.Graphics2D
-import java.awt.Color
-import java.awt.RenderingHints
+import java.awt.{Image, Graphics2D, Color, RenderingHints}
 
 /*
  * "PDFRenderer only deals with up to version 1.4 of the PDF spec.
  * The current version is 1.6, and there have been quite a few additions
  * and changes between 1.4 and 1.6 which seem to break PDFRenderer."
  */
-import com.sun.pdfview.PDFFile
-import com.sun.pdfview.PDFPage
+import com.sun.pdfview.{PDFFile, PDFPage} 
 
 import java.io.RandomAccessFile
 import java.nio.channels.FileChannel
@@ -23,9 +19,7 @@ import java.awt.Rectangle
 
 // See http://www.capricasoftware.co.uk/vlcj/index.php for requirements and dependencies
 import java.util.concurrent.CountDownLatch
-import uk.co.caprica.vlcj.player.MediaPlayer
-import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter
-import uk.co.caprica.vlcj.player.MediaPlayerFactory
+import uk.co.caprica.vlcj.player.{MediaPlayer, MediaPlayerEventAdapter, MediaPlayerFactory}
 
 /** Provides methods for creating and managing thumbnails */
 class Thumbnails {

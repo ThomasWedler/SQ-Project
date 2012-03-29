@@ -1,6 +1,8 @@
 package basic
 
 import scala.xml._
+import org.apache.commons.io.FileUtils
+import java.io.File
 
 /** Provides methods for reading and editing the configuration file */
 class Config {
@@ -127,7 +129,11 @@ class Config {
 
     val newconfig = Elem(null, "config", Null, TopScope, newjpg, newpdf, newmp4)
 
-    scala.xml.XML.save("config.xml", newconfig)
+    var prettyfier = new scala.xml.PrettyPrinter(80, 2)
+    val header = """<?xml version="1.0" encoding="UTF-8" ?>""" + "\n"
+    val prettyConfig = header + prettyfier.format(config)
+    val xmlFile: File = new File("config.xml")
+    FileUtils.write(xmlFile, prettyConfig, "UTF-8")    
   }
 
 }
