@@ -101,6 +101,7 @@ class View extends Frame {
 	var mntmAbout = new JMenuItem("About")
     var mntmRefresh = new JMenuItem("Refresh")
 	var mntmDelete = new JMenuItem("Delete File")
+	var mntmConfig = new JMenuItem("Configuration")
 		
 	panel.add(menu)
 	menu.add(mnFile)
@@ -126,6 +127,8 @@ class View extends Frame {
 	mnEdit.add(new JSeparator)
 	mnEdit.add(mntmSave)
 	mnEdit.add(mntmLoad)
+	
+	mnOptions.add(mntmConfig)
 	
 	mnHelp.add(mntmHelp)
 	mnHelp.add(mntmAbout)

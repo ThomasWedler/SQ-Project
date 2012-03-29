@@ -34,7 +34,7 @@ class Control {
     
   refresh
   
-  view.name.getDocument().addUndoableEditListener(undomanager)
+  view.name.getDocument.addUndoableEditListener(undomanager)
   
   // menu item group
   view.mntmGroup.addActionListener( new ActionListener {
@@ -212,6 +212,13 @@ class Control {
 	  }
   })
   
+  // configuration
+  view.mntmConfig.addActionListener( new ActionListener {
+	  def actionPerformed(e:ActionEvent) {
+	    new gui.optionpane.Control
+	  }
+  })
+  
   // refreshes the ui
   def refresh {
 	  addLabels(true)
@@ -268,6 +275,9 @@ class Control {
     }
     view.relation.removeAll
     for (i <- list) {
+      
+            // mouse listener fŸr clickable und play file
+      
       view.relation.add(new JLabel(i.getText))
     }
   }
