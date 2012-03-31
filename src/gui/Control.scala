@@ -18,6 +18,8 @@ import java.io.FileReader
 import javax.swing.JFileChooser
 import javax.swing.filechooser.FileNameExtensionFilter
 import javax.swing.BorderFactory
+import javax.swing.ImageIcon
+import javax.swing.SwingConstants
 
 // Verwaltung der darzustellenden Daten
 
@@ -144,7 +146,11 @@ class Control {
   // about
   view.mntmAbout.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
-	  	JOptionPane.showMessageDialog(null, "Version 1.0.0\n\nVery special thanks to:\n    David Cyborra\n    Kristof Korwisi\n    Thomas Wedler\n    Chris Zimmerer", "About", JOptionPane.INFORMATION_MESSAGE);
+	    val devImage: ImageIcon = new ImageIcon(getClass().getResource("/resources/devTeam.png"), "");
+	    val devLabel: JLabel = new JLabel("<html><br />Version 1.0.0<br /><br />The Team (FLTR): David Cyborra, Thomas Wedler, Kristof Korwisi, Chris Zimmerer</html>", devImage, javax.swing.SwingConstants.CENTER)
+	  	devLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+	    devLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER)
+	    JOptionPane.showMessageDialog(null, devLabel, "About", JOptionPane.PLAIN_MESSAGE);
 	  }
   })
   

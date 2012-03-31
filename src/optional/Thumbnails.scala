@@ -1,25 +1,24 @@
 /** This package provides optional features to SQ-Project */
 package optional
 
-import java.io.File
+import java.io.{ File, IOException, RandomAccessFile }
 import java.awt.image.BufferedImage
-import java.awt.{Image, Graphics2D, Color, RenderingHints}
+import java.awt.{ Image, Graphics2D, Color, RenderingHints, Rectangle }
 
 /*
  * "PDFRenderer only deals with up to version 1.4 of the PDF spec.
  * The current version is 1.6, and there have been quite a few additions
  * and changes between 1.4 and 1.6 which seem to break PDFRenderer."
  */
-import com.sun.pdfview.{PDFFile, PDFPage} 
+import com.sun.pdfview.{ PDFFile, PDFPage }
 
-import java.io.RandomAccessFile
 import java.nio.channels.FileChannel
 import java.nio.ByteBuffer
-import java.awt.Rectangle
 
 // See http://www.capricasoftware.co.uk/vlcj/index.php for requirements and dependencies
+import uk.co.caprica.vlcj.player.{ MediaPlayer, MediaPlayerEventAdapter, MediaPlayerFactory }
+
 import java.util.concurrent.CountDownLatch
-import uk.co.caprica.vlcj.player.{MediaPlayer, MediaPlayerEventAdapter, MediaPlayerFactory}
 
 /** Provides methods for creating and managing thumbnails */
 class Thumbnails {
@@ -42,8 +41,7 @@ class Thumbnails {
       path = path + "mp4/"
       thumbnailFile = new File(path + file)
     } else if (extension == "txt") {
-      /* 
-       * txt-files are for relations only and therefor will not have a thumbnail.
+      /* txt-files are for relations only and therefor will not have a thumbnail.
        * To avoid thumbnail-generation true is returned even it's not :-)
        */
       return true
@@ -91,7 +89,11 @@ class Thumbnails {
       var filename = path + file
       thumbnailFile = "filesystem/thumbnails/jpg/" + file
 
-      image = javax.imageio.ImageIO.read(new File(filename))
+      try {
+        image = javax.imageio.ImageIO.read(new File(filename))
+      } catch {
+        case io: IOException => println("Failed to read JPG file.")
+      }
 
       // Generate thumbnail of a PDF-file
     } else if (extension == "pdf") {
@@ -99,15 +101,19 @@ class Thumbnails {
       var filename = path + file
       thumbnailFile = "filesystem/thumbnails/pdf/" + file.split('.').init :+ "jpg" mkString "."
 
-      var pdffilename: File = new File(filename)
-      var raf: RandomAccessFile = new RandomAccessFile(pdffilename, "r")
+      var pdfFilename: File = new File(filename)
+      var raf: RandomAccessFile = new RandomAccessFile(pdfFilename, "r")
       var channel: FileChannel = raf.getChannel()
       var buf: ByteBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
-      var pdffile: PDFFile = new PDFFile(buf)
+      var pdfFile: PDFFile = new PDFFile(buf)
 
-      // Draw first page to an image
-      var page: PDFPage = pdffile.getPage(0)
-
+      var page: PDFPage = null
+      try {
+        // Draw first page to an image
+        page = pdfFile.getPage(0)
+      } catch {
+        case io: IOException => println("Failed to read PDF file.")
+      }
       // Get width and height for the doc at the default zoom
       var rect: Rectangle = new Rectangle(0, 0, page.getBBox().getWidth().toInt, page.getBBox().getHeight().toInt)
 
@@ -159,12 +165,16 @@ class Thumbnails {
         }
       })
 
-      if (mediaPlayer.startMedia(mrl)) {
-        mediaPlayer.setPosition(VLC_THUMBNAIL_POSITION)
-        inPositionLatch.await() // Might wait forever if error
-        image = mediaPlayer.getSnapshot()
-        snapshotTakenLatch.await() // Might wait forever if error
-        mediaPlayer.stop()
+      try {
+        if (mediaPlayer.startMedia(mrl)) {
+          mediaPlayer.setPosition(VLC_THUMBNAIL_POSITION)
+          inPositionLatch.await() // Might wait forever if error
+          image = mediaPlayer.getSnapshot()
+          snapshotTakenLatch.await() // Might wait forever if error
+          mediaPlayer.stop()
+        }
+      } catch {
+        case io: IOException => println("Failed to read MP4 file.")
       }
 
       mediaPlayer.release()
@@ -199,7 +209,10 @@ class Thumbnails {
     graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
     graphics2D.drawImage(image, 0, 0, thumbWidth, thumbHeight, null)
 
-    javax.imageio.ImageIO.write(thumbImage, "jpg", new File(thumbnailFile));
-
+    try {
+      javax.imageio.ImageIO.write(thumbImage, "jpg", new File(thumbnailFile));
+    } catch {
+      case io: IOException => println("Failed to write thumbnail.")
+    }
   }
 }
