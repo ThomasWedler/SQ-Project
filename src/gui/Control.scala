@@ -38,43 +38,59 @@ class Control {
   
   // menu item group
   view.mntmGroup.addActionListener( new ActionListener {
-	  def actionPerformed(e:ActionEvent) {	    
-	    JOptionPane.showMessageDialog(null, "Please select the items you would like to add to your new group.", "Group", JOptionPane.INFORMATION_MESSAGE)
-	    refresh
-		setAnnotationPanel("Group", true)
-	 	addLabels(false) 
+	  def actionPerformed(e:ActionEvent) {
+	    newRelation("Group")
 	  }
   })
   
   // menu item list
   view.mntmList.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
-		JOptionPane.showMessageDialog(null, "Please select the items you would like to add to your new list.", "List", JOptionPane.INFORMATION_MESSAGE)
-	    refresh
-		setAnnotationPanel("List", true)
-		addLabels(false)
+		newRelation("List")
 	  }
   })
   
   // button group
   view.btnGroup.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
-	    JOptionPane.showMessageDialog(null, "Please select the items you would like to add to your new group.", "Group", JOptionPane.INFORMATION_MESSAGE)
-	    refresh
-		setAnnotationPanel("Group", true)
-		addLabels(false)
+		newRelation("Group")
 	  }
   })
   
   // button list
   view.btnList.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
-	    JOptionPane.showMessageDialog(null, "Please select the items you would like to add to your new list.", "List", JOptionPane.INFORMATION_MESSAGE)
-	    refresh
-		setAnnotationPanel("List", true)
-		addLabels(false)
+	    newRelation("List")
 	  }
   })
+  
+  def newRelation(s: String) {
+     if (view.annotation.isVisible) {
+	      var answer = saveQuestion
+		  if (answer.equals("Yes")) {
+		    var result = thomas.overwrite(new File("filesystem/relations/" + view.name.getText + ".txt"))
+		    if (result.equals("Yes") || result.equals("none")) {
+			  var list = convertToFilelist(model.relationList.toList)
+			  new Annotation(view.lblName.getText, view.name.getText, list)
+			  JOptionPane.showMessageDialog(null, "Please select the items you would like to add to your New " + s + ".", "New " + s, JOptionPane.INFORMATION_MESSAGE)
+			  refresh
+			  setAnnotationPanel(s, true)
+			  addLabels(false)
+		    }
+		  }
+	      if (answer.equals("No")) {
+		  	JOptionPane.showMessageDialog(null, "Please select the items you would like to add to your New " + s + ".", "New " + s, JOptionPane.INFORMATION_MESSAGE)
+			refresh
+			setAnnotationPanel(s, true)
+			addLabels(false)
+		  }
+	    } else {
+	      JOptionPane.showMessageDialog(null, "Please select the items you would like to add to your New " + s + ".", "New " + s, JOptionPane.INFORMATION_MESSAGE)
+	      refresh
+	      setAnnotationPanel(s, true)
+	      addLabels(false)
+	    }
+  }
   
   // undo
   view.mntmUndo.addActionListener( new ActionListener {
@@ -275,10 +291,10 @@ class Control {
     }
     view.relation.removeAll
     for (i <- list) {
-      
-            // mouse listener fŸr clickable und play file
-      
-      view.relation.add(new JLabel(i.getText))
+      var label = new JLabel(i.getText)
+//      if (!i.getText.isEmpty)
+//        addMouseListenerRelation(label)
+      view.relation.add(label)
     }
   }
   
@@ -528,5 +544,46 @@ class Control {
 	  }
 	  model.overviewList = list
    }
+   
+   // mouse listener for clickable relation files
+//   def addMouseListenerRelation(label: JLabel) {
+//    label.addMouseListener( new MouseListener {
+//		  def mouseClicked(e:MouseEvent) {
+//		    var list = model.getRelationList
+//		    var buffer = new ListBuffer[JLabel]
+//		    for (b <- list) {
+//		      buffer += b
+//		    }
+//			  for (l <- buffer) {
+//			    l.setFocusable(false)
+//			    if (l.getText.equals(label.getText)) {
+//			    	l.setText("<html><body><span style=\"background-color: #87CEFA\";><b>" + label.getText + "</b></span></body></html>")
+//			    	l.setFocusable(true)
+//			    }
+//			  }
+//		      view.relation.removeAll
+//			  for (i <- buffer) {
+//			    var l = new JLabel(i.getText)
+//			    if (!i.isFocusable) {
+//			      addMouseListenerRelation(l)
+//			    }
+//			    view.relation.add(l)
+//			  }
+//			  model.relationList = buffer
+////			  addLabels(false)
+////			  for (i <- model.imageList) {
+////				for (r <- model.relationList) {
+////				  if (i.getText.equals(r.getText))
+////				    i.setEnabled(true)
+////				}  
+////			  }
+//			  view.panel.updateUI
+//		  }
+//		  def mouseExited (e: MouseEvent) {}
+//		  def mouseEntered (e: MouseEvent) {}
+//		  def mouseReleased (e: MouseEvent) {}
+//		  def mousePressed (e: MouseEvent) {}
+//	    })
+//  }
   
 }

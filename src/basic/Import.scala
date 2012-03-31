@@ -11,7 +11,9 @@ class Import {
   var function = new Thomas  
   var files = function.getFiles
   
-  // calls the copy function
-  function.copy(files)
-  
+  if (files.length != 0) {
+	  // calls the copy function
+	  function.copy(files)
+  }
+	  
 }

@@ -10,5 +10,5 @@ class Model {
   var pathEditJPG = config.getEditor("jpg")
   var pathEditPDF = config.getEditor("pdf")
   var pathEditMP4 = config.getEditor("mp4")
-
+ 
 }

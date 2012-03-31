@@ -19,7 +19,7 @@ class View extends Frame {
     var panel = new JPanel
     var layout = new SpringLayout
     panel.setLayout(layout)
-    
+     
     var btnSave = new JButton("Save")
   	var btnCancel = new JButton("Cancel")
   	

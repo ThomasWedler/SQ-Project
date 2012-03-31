@@ -52,7 +52,8 @@ class Control {
 		fc.setMultiSelectionEnabled(false)
 		fc.showOpenDialog(null)
 		var file = fc.getSelectedFile
-		view.tfPathEditJPG.setText(file.getName)
+		if (file != null)
+			view.tfPathEditJPG.setText(file.getName)
 	  }
   })
   
@@ -64,7 +65,8 @@ class Control {
 		fc.setMultiSelectionEnabled(false)
 		fc.showOpenDialog(null)
 		var file = fc.getSelectedFile
-		view.tfPathReadJPG.setText(file.getName)
+		if (file != null)
+			view.tfPathReadJPG.setText(file.getName)
 	  }
   })
   
@@ -76,7 +78,8 @@ class Control {
 		fc.setMultiSelectionEnabled(false)
 		fc.showOpenDialog(null)
 		var file = fc.getSelectedFile
-		view.tfPathEditPDF.setText(file.getName)
+		if (file != null)
+			view.tfPathEditPDF.setText(file.getName)
 	  }
   })
   
@@ -88,7 +91,8 @@ class Control {
 		fc.setMultiSelectionEnabled(false)
 		fc.showOpenDialog(null)
 		var file = fc.getSelectedFile
-		view.tfPathReadPDF.setText(file.getName)
+		if (file != null)
+			view.tfPathReadPDF.setText(file.getName)
 	  }
   })
   
@@ -100,7 +104,8 @@ class Control {
 		fc.setMultiSelectionEnabled(false)
 		fc.showOpenDialog(null)
 		var file = fc.getSelectedFile
-		view.tfPathEditMP4.setText(file.getName)
+		if (file != null)
+			view.tfPathEditMP4.setText(file.getName)
 	  }
   })
   
@@ -112,7 +117,8 @@ class Control {
 		fc.setMultiSelectionEnabled(false)
 		fc.showOpenDialog(null)
 		var file = fc.getSelectedFile
-		view.tfPathReadMP4.setText(file.getName)
+		if (file != null)
+			view.tfPathReadMP4.setText(file.getName)
 	  }
   })
   
