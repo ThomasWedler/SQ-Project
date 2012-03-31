@@ -30,8 +30,8 @@ class Config {
       val newMp4Read = Elem(null, "read", Null, TopScope, Text(""))
       val newMp4Edit = Elem(null, "edit", Null, TopScope, Text(""))
       val newJpg = Elem(null, "jpg", Null, TopScope, newJpgRead, newJpgEdit)
-      val newPdf = Elem(null, "jpg", Null, TopScope, newPdfRead, newPdfEdit)
-      val newMp4 = Elem(null, "jpg", Null, TopScope, newMp4Read, newMp4Edit)
+      val newPdf = Elem(null, "pdf", Null, TopScope, newPdfRead, newPdfEdit)
+      val newMp4 = Elem(null, "mp4", Null, TopScope, newMp4Read, newMp4Edit)
       val newConfig = Elem(null, "config", Null, TopScope, newJpg, newPdf, newMp4)
       
       var prettyfier = new scala.xml.PrettyPrinter(80, 2)
@@ -130,8 +130,8 @@ class Config {
       newMp4Read = Elem(null, "read", Null, TopScope, Text(reader))
     }
     val newJpg = Elem(null, "jpg", Null, TopScope, newJpgRead, newJpgEdit)
-    val newPdf = Elem(null, "jpg", Null, TopScope, newPdfRead, newPdfEdit)
-    val newMp4 = Elem(null, "jpg", Null, TopScope, newMp4Read, newMp4Edit)
+    val newPdf = Elem(null, "pdf", Null, TopScope, newPdfRead, newPdfEdit)
+    val newMp4 = Elem(null, "mp4", Null, TopScope, newMp4Read, newMp4Edit)
 
     val newConfig = Elem(null, "config", Null, TopScope, newJpg, newPdf, newMp4)
 
@@ -169,15 +169,15 @@ class Config {
 
     // Change values according to the given filetype.
     if (filetype == "jpg") {
-      val newJpgEdit = Elem(null, "edit", Null, TopScope, Text(editor))
+      newJpgEdit = Elem(null, "edit", Null, TopScope, Text(editor))
     } else if (filetype == "pdf") {
-      val newPdfEdit = Elem(null, "edit", Null, TopScope, Text(editor))
+      newPdfEdit = Elem(null, "edit", Null, TopScope, Text(editor))
     } else if (filetype == "mp4") {
-      val newMp4Edit = Elem(null, "edit", Null, TopScope, Text(editor))
+      newMp4Edit = Elem(null, "edit", Null, TopScope, Text(editor))
     }
     val newJpg = Elem(null, "jpg", Null, TopScope, newJpgRead, newJpgEdit)
-    val newPdf = Elem(null, "jpg", Null, TopScope, newPdfRead, newPdfEdit)
-    val newMp4 = Elem(null, "jpg", Null, TopScope, newMp4Read, newMp4Edit)
+    val newPdf = Elem(null, "pdf", Null, TopScope, newPdfRead, newPdfEdit)
+    val newMp4 = Elem(null, "mp4", Null, TopScope, newMp4Read, newMp4Edit)
 
     val newConfig = Elem(null, "config", Null, TopScope, newJpg, newPdf, newMp4)
 
