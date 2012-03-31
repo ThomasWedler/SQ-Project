@@ -99,14 +99,14 @@ class Thumbnails {
       var filename = path + file
       thumbnailFile = "filesystem/thumbnails/pdf/" + file.split('.').init :+ "jpg" mkString "."
 
-      var pdffilename: File = new File(filename)
-      var raf: RandomAccessFile = new RandomAccessFile(pdffilename, "r")
+      var pdfFilename: File = new File(filename)
+      var raf: RandomAccessFile = new RandomAccessFile(pdfFilename, "r")
       var channel: FileChannel = raf.getChannel()
       var buf: ByteBuffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size())
-      var pdffile: PDFFile = new PDFFile(buf)
+      var pdfFile: PDFFile = new PDFFile(buf)
 
       // Draw first page to an image
-      var page: PDFPage = pdffile.getPage(0)
+      var page: PDFPage = pdfFile.getPage(0)
 
       // Get width and height for the doc at the default zoom
       var rect: Rectangle = new Rectangle(0, 0, page.getBBox().getWidth().toInt, page.getBBox().getHeight().toInt)
