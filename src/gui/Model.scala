@@ -116,7 +116,7 @@ class Model {
   // fills the relation list from the image icon content
   def getRelationList = {
 	for (i <- imageList) {
-	  if (i.isEnabled) {
+	  if (i.isEnabled && !i.getText.isEmpty) {
 	    if (!relationList.contains(i))
 	      relationList += i
 	  } else {

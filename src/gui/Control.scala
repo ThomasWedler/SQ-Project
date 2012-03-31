@@ -33,10 +33,12 @@ class Control {
   
   var undomanager = new UndoManager
   undomanager.setLimit(1000)
+  view.name.getDocument.addUndoableEditListener(undomanager)
+
     
   refresh
   
-  view.name.getDocument.addUndoableEditListener(undomanager)
+  // ---------------------- Action Listener -------------------------------
   
   // menu item group
   view.mntmGroup.addActionListener( new ActionListener {
@@ -65,34 +67,6 @@ class Control {
 	    newRelation("List")
 	  }
   })
-  
-  def newRelation(s: String) {
-     if (view.annotation.isVisible) {
-	      var answer = saveQuestion
-		  if (answer.equals("Yes")) {
-		    var result = thomas.overwrite(new File("filesystem/relations/" + view.name.getText + ".txt"))
-		    if (result.equals("Yes") || result.equals("none")) {
-			  var list = convertToFilelist(model.relationList.toList)
-			  new Annotation(view.lblName.getText, view.name.getText, list)
-			  JOptionPane.showMessageDialog(null, "Please select the items you would like to add to your New " + s + ".", "New " + s, JOptionPane.INFORMATION_MESSAGE)
-			  refresh
-			  setAnnotationPanel(s, true)
-			  addLabels(false)
-		    }
-		  }
-	      if (answer.equals("No")) {
-		  	JOptionPane.showMessageDialog(null, "Please select the items you would like to add to your New " + s + ".", "New " + s, JOptionPane.INFORMATION_MESSAGE)
-			refresh
-			setAnnotationPanel(s, true)
-			addLabels(false)
-		  }
-	    } else {
-	      JOptionPane.showMessageDialog(null, "Please select the items you would like to add to your New " + s + ".", "New " + s, JOptionPane.INFORMATION_MESSAGE)
-	      refresh
-	      setAnnotationPanel(s, true)
-	      addLabels(false)
-	    }
-  }
   
   // undo
   view.mntmUndo.addActionListener( new ActionListener {
@@ -241,99 +215,23 @@ class Control {
 	  }
   })
   
-  // refreshes the ui
-  def refresh {
-	  addLabels(true)
-	  addOverviewLabels
-	  view.panel.updateUI
-  }
-    
-  // adds the from the filesystem created labels to the mid panel
-  def addLabels(enabled: Boolean) {
-    var list = model.getImageList
-    view.mid.removeAll
-    for (i <- list) {
-      if (!enabled) {
-        i.disable()
-        addMouseListenerEnabled(i)
-      } else {
-        if (!i.getText.isEmpty)
-        	addMouseListenerBorder(i)
-        else
-        	addMouseListenerDeselect(i)
-      }
-      view.mid.add(i)
-    }
-    model.imageList = list
-  }
+  // menu item play
+  view.mntmPlay.addActionListener( new ActionListener {
+	  def actionPerformed(e:ActionEvent) {
+		  // DAVID
+	  }
+  })
   
-  // adds the name of the from the filesystem created labels to the overview panel
-  def addOverviewLabels {
-    var list = model.getOverviewList
-    view.overview.removeAll
-    for (i <- list) {
-      var label = new JLabel(i.getText)
-      if (!i.isFocusable) {
-    	  if (!i.getText.isEmpty && i.getText.substring(i.getText.length-3, i.getText.length).equals("txt"))
-    		  addMouseListenerLoad(label)
-      }
-      view.overview.add(label)
-    }
-    model.overviewList = list
-  }
+  // button play
+  view.btnPlay.addActionListener( new ActionListener {
+	  def actionPerformed(e:ActionEvent) {
+		  // DAVID
+	  }
+  })
   
-  // adds the name of the labels to the new relation list
-  def addRelationLabels(str: String) {
-    var list = model.getRelationList
-    if (str.equals("Group:")) {
-      var l = new ListBuffer[JLabel]
-      l += new JLabel("")
-      for (i <- model.imageList) {
-        if (i.isEnabled)
-          l += i
-      }
-      model.relationList = l
-      list = model.fill(l.toList, 26)
-    }
-    view.relation.removeAll
-    for (i <- list) {
-      var label = new JLabel(i.getText)
-//      if (!i.getText.isEmpty)
-//        addMouseListenerRelation(label)
-      view.relation.add(label)
-    }
-  }
   
-  // sets the annotation panel right
-  def setAnnotationPanel(s: String, enabled: Boolean) {
-	  	if (enabled)
-	  		view.annotation.setVisible(true)
-	  	else
-	  	view.annotation.setVisible(false)
-    	view.lblName.setText(s + ":")
-    	view.name.setText("New " + s)
-    	view.name.requestFocus
-    	if (view.annotation.isVisible) {
-    	    view.relation.removeAll
-    		view.mntmRefresh.setEnabled(false)
-    		view.mntmSave.setEnabled(true)
-    		view.btnPlay.setVisible(true)
-    		view.btnSave.setVisible(true)
-    		view.btnCancel.setVisible(true)
-    		view.sp_relation.setVisible(true)
-    		model.relationList = new ListBuffer[JLabel]
-    	    model.relationList += new JLabel("")
-    	    view.mntmSave.setEnabled(true)
-    	} else {
-    		view.mntmRefresh.setEnabled(true)
-    		view.btnPlay.setVisible(false)
-    		view.btnSave.setVisible(false)
-    		view.btnCancel.setVisible(false)
-    		view.sp_relation.setVisible(false)
-    		view.mntmSave.setEnabled(false)
-    	}
-  }
-  
+  // ---------------------- Mouse Listener -------------------------------
+
   // adds a mouse listener to a jlabel in the relation mode, that turns them en-/disabled
   def addMouseListenerEnabled(label: JLabel) {
     label.addMouseListener( new MouseListener {
@@ -429,6 +327,150 @@ class Control {
 	    })
   }
   
+  // on click find the txt file in the filesystem and load it
+   def addMouseListenerLoad(label: JLabel) {
+    label.addMouseListener( new MouseListener {
+		  def mouseClicked(e:MouseEvent) {
+			  var file = new File("")
+			  var name = label.getText.substring(6, label.getText.length)
+			  for (f <- thomas.walkthrough) {
+			    if (f.getName.equals(name))
+			      file = f
+			  }
+			  var focused = false
+			  for (l <- model.overviewList) {
+			    if (l.isFocusable)
+			      focused = true
+			  }
+			  if (!focused) {
+				  loadRelation(file)
+				  refreshOverview(label)
+			  } else {
+			    var answer = saveQuestion
+			    if (answer.equals("Yes")) {
+			      var result = thomas.overwrite(new File("filesystem/relations/" + view.name.getText + ".txt"))
+					    if (result.equals("Yes") || result.equals("none")) {
+						  var l = convertToFilelist(model.relationList.toList)
+						  new Annotation(view.lblName.getText, view.name.getText, l)
+						  loadRelation(file)
+						  refreshOverview(label)
+					    }
+			      		if (result.equals("No")) {
+			      			loadRelation(file)
+			      			refreshOverview(label)
+			      		}
+			    }
+			    if (answer.equals("No")) {
+			    	loadRelation(file)
+			    	refreshOverview(label)
+			    }
+			  }
+		  }
+		  def mouseExited (e: MouseEvent) {}
+		  def mouseEntered (e: MouseEvent) {}
+		  def mouseReleased (e: MouseEvent) {}
+		  def mousePressed (e: MouseEvent) {}
+	    })
+  }
+  
+  
+  // ---------------------- Methoden -------------------------------
+  
+  // refreshes the ui
+  def refresh {
+	  addLabels(true)
+	  addOverviewLabels
+	  view.panel.updateUI
+  }
+    
+  // adds the from the filesystem created labels to the mid panel
+  def addLabels(enabled: Boolean) {
+    var list = model.getImageList
+    view.mid.removeAll
+    for (i <- list) {
+      if (!enabled) {
+        i.disable()
+        addMouseListenerEnabled(i)
+      } else {
+        if (!i.getText.isEmpty)
+        	addMouseListenerBorder(i)
+        else
+        	addMouseListenerDeselect(i)
+      }
+      view.mid.add(i)
+    }
+    model.imageList = list
+  }
+  
+  // adds the name of the from the filesystem created labels to the overview panel
+  def addOverviewLabels {
+    var list = model.getOverviewList
+    view.overview.removeAll
+    for (i <- list) {
+      var label = new JLabel(i.getText)
+      if (!i.isFocusable) {
+    	  if (!i.getText.isEmpty && i.getText.substring(i.getText.length-3, i.getText.length).equals("txt"))
+    		  addMouseListenerLoad(label)
+      }
+      view.overview.add(label)
+    }
+    model.overviewList = list
+  }
+  
+  // adds the name of the labels to the new relation list
+  def addRelationLabels(str: String) {
+    var list = model.getRelationList
+    if (str.equals("Group:")) {
+      var l = new ListBuffer[JLabel]
+      l += new JLabel("")
+      for (i <- model.imageList) {
+        if (i.isEnabled)
+          l += i
+      }
+      model.relationList = l
+      list = model.fill(l.toList, 26)
+    }
+    view.relation.removeAll
+    for (i <- list) {
+      var label = new JLabel(i.getText)
+//      if (!i.getText.isEmpty)
+//        addMouseListenerRelation(label)
+      view.relation.add(label)
+    }
+  }
+  
+  // sets the annotation panel right
+  def setAnnotationPanel(s: String, enabled: Boolean) {
+	  	if (enabled)
+	  		view.annotation.setVisible(true)
+	  	else
+	  	view.annotation.setVisible(false)
+    	view.lblName.setText(s + ":")
+    	view.name.setText("New " + s)
+    	view.name.requestFocus
+    	if (view.annotation.isVisible) {
+    	    view.relation.removeAll
+    		view.mntmRefresh.setEnabled(false)
+    		view.mntmSave.setEnabled(true)
+    		view.btnPlay.setVisible(true)
+    		view.btnSave.setVisible(true)
+    		view.btnCancel.setVisible(true)
+    		view.sp_relation.setVisible(true)
+    		model.relationList = new ListBuffer[JLabel]
+    	    model.relationList += new JLabel("")
+    	    view.mntmSave.setEnabled(true)
+    	} else {
+    		view.mntmRefresh.setEnabled(true)
+    		view.btnPlay.setVisible(false)
+    		view.btnSave.setVisible(false)
+    		view.btnCancel.setVisible(false)
+    		view.sp_relation.setVisible(false)
+    		view.mntmSave.setEnabled(false)
+    	}
+  }
+  
+  
+  
    // converts a list of jlabels to a list of files
   def convertToFilelist(list: List[JLabel]) = {
     var newList = new ListBuffer[File]
@@ -484,51 +526,7 @@ class Control {
 	addRelationLabels(list.first)
   }
   
-  // on click find the txt file in the filesystem and load it
-   def addMouseListenerLoad(label: JLabel) {
-    label.addMouseListener( new MouseListener {
-		  def mouseClicked(e:MouseEvent) {
-			  var file = new File("")
-			  var name = label.getText.substring(6, label.getText.length)
-			  for (f <- thomas.walkthrough) {
-			    if (f.getName.equals(name))
-			      file = f
-			  }
-			  var focused = false
-			  for (l <- model.overviewList) {
-			    if (l.isFocusable)
-			      focused = true
-			  }
-			  if (!focused) {
-				  loadRelation(file)
-				  refreshOverview(label)
-			  } else {
-			    var answer = saveQuestion
-			    if (answer.equals("Yes")) {
-			      var result = thomas.overwrite(new File("filesystem/relations/" + view.name.getText + ".txt"))
-					    if (result.equals("Yes") || result.equals("none")) {
-						  var l = convertToFilelist(model.relationList.toList)
-						  new Annotation(view.lblName.getText, view.name.getText, l)
-						  loadRelation(file)
-						  refreshOverview(label)
-					    }
-			      		if (result.equals("No")) {
-			      			loadRelation(file)
-			      			refreshOverview(label)
-			      		}
-			    }
-			    if (answer.equals("No")) {
-			    	loadRelation(file)
-			    	refreshOverview(label)
-			    }
-			  }
-		  }
-		  def mouseExited (e: MouseEvent) {}
-		  def mouseEntered (e: MouseEvent) {}
-		  def mouseReleased (e: MouseEvent) {}
-		  def mousePressed (e: MouseEvent) {}
-	    })
-  }
+  
    
    // refreshs the overview for load relation purposes
    def refreshOverview(label: JLabel) {
@@ -550,6 +548,34 @@ class Control {
 	  }
 	  model.overviewList = list
    }
+   
+   def newRelation(s: String) {
+     if (view.annotation.isVisible) {
+	      var answer = saveQuestion
+		  if (answer.equals("Yes")) {
+		    var result = thomas.overwrite(new File("filesystem/relations/" + view.name.getText + ".txt"))
+		    if (result.equals("Yes") || result.equals("none")) {
+			  var list = convertToFilelist(model.relationList.toList)
+			  new Annotation(view.lblName.getText, view.name.getText, list)
+			  JOptionPane.showMessageDialog(null, "Please select the items you would like to add to your New " + s + ".", "New " + s, JOptionPane.INFORMATION_MESSAGE)
+			  refresh
+			  setAnnotationPanel(s, true)
+			  addLabels(false)
+		    }
+		  }
+	      if (answer.equals("No")) {
+		  	JOptionPane.showMessageDialog(null, "Please select the items you would like to add to your New " + s + ".", "New " + s, JOptionPane.INFORMATION_MESSAGE)
+			refresh
+			setAnnotationPanel(s, true)
+			addLabels(false)
+		  }
+	    } else {
+	      JOptionPane.showMessageDialog(null, "Please select the items you would like to add to your New " + s + ".", "New " + s, JOptionPane.INFORMATION_MESSAGE)
+	      refresh
+	      setAnnotationPanel(s, true)
+	      addLabels(false)
+	    }
+  }
    
    // mouse listener for clickable relation files
 //   def addMouseListenerRelation(label: JLabel) {

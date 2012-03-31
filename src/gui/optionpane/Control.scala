@@ -24,7 +24,6 @@ class Control {
 	  def actionPerformed(e:ActionEvent) {	    
 	    var answer = saveQuestion
 	    if (answer.equals("Yes")) {
-	      // throws exceptions in config.setReader
 	    	model.config.setReader("jpg", view.tfPathReadJPG.getText)
 	    	model.config.setReader("pdf", view.tfPathReadPDF.getText)
 	    	model.config.setReader("mp4", view.tfPathReadMP4.getText)
@@ -53,7 +52,7 @@ class Control {
 		fc.showOpenDialog(null)
 		var file = fc.getSelectedFile
 		if (file != null)
-			view.tfPathEditJPG.setText(file.getName)
+			view.tfPathEditJPG.setText(file.getAbsolutePath)
 	  }
   })
   
@@ -66,7 +65,7 @@ class Control {
 		fc.showOpenDialog(null)
 		var file = fc.getSelectedFile
 		if (file != null)
-			view.tfPathReadJPG.setText(file.getName)
+			view.tfPathReadJPG.setText(file.getAbsolutePath)
 	  }
   })
   
@@ -79,7 +78,7 @@ class Control {
 		fc.showOpenDialog(null)
 		var file = fc.getSelectedFile
 		if (file != null)
-			view.tfPathEditPDF.setText(file.getName)
+			view.tfPathEditPDF.setText(file.getAbsolutePath)
 	  }
   })
   
@@ -92,7 +91,7 @@ class Control {
 		fc.showOpenDialog(null)
 		var file = fc.getSelectedFile
 		if (file != null)
-			view.tfPathReadPDF.setText(file.getName)
+			view.tfPathReadPDF.setText(file.getAbsolutePath)
 	  }
   })
   
@@ -105,7 +104,7 @@ class Control {
 		fc.showOpenDialog(null)
 		var file = fc.getSelectedFile
 		if (file != null)
-			view.tfPathEditMP4.setText(file.getName)
+			view.tfPathEditMP4.setText(file.getAbsolutePath)
 	  }
   })
   
@@ -118,7 +117,7 @@ class Control {
 		fc.showOpenDialog(null)
 		var file = fc.getSelectedFile
 		if (file != null)
-			view.tfPathReadMP4.setText(file.getName)
+			view.tfPathReadMP4.setText(file.getAbsolutePath)
 	  }
   })
   
