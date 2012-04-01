@@ -242,7 +242,7 @@ class Control {
 		    } else {
 		    	label.setEnabled(false)
 		    }
-		    addRelationLabels(view.lblName.getText())
+		    addRelationLabels(view.lblName.getText)
 		    view.panel.updateUI
 		  }
 		  def mouseExited (e: MouseEvent) {}
@@ -368,6 +368,43 @@ class Control {
 		  def mousePressed (e: MouseEvent) {}
 	    })
   }
+   
+   // mouse listener for clickable relation files
+   def addMouseListenerRelation(label: JLabel) {
+    label.addMouseListener( new MouseListener {
+		  def mouseClicked(e:MouseEvent) {
+		    var list = model.relationList
+		    for (l <- list) {
+		      if (l.isFocusable) {
+		        var name = l.getText.replace("<html><body><span style=\"background-color: #87CEFA\";><b>", "")
+		        name = name.replace("</b></span></body></html>", "")
+		        l.setText(name)
+		      }
+		    }		      
+			  for (l <- list) {
+			    l.setFocusable(false)
+			    if (l.getText.equals(label.getText)) {
+			    	l.setText("<html><body><span style=\"background-color: #87CEFA\";><b>" + label.getText + "</b></span></body></html>")
+			    	l.setFocusable(true)
+			    }
+			  }
+		      view.relation.removeAll
+			  for (i <- list) {
+			    var l = new JLabel(i.getText)
+			    if (!i.isFocusable) {
+			      addMouseListenerRelation(l)
+			    }
+			    view.relation.add(l)
+			  }
+			  model.relationList = list
+			  view.panel.updateUI
+		  }
+		  def mouseExited (e: MouseEvent) {}
+		  def mouseEntered (e: MouseEvent) {}
+		  def mouseReleased (e: MouseEvent) {}
+		  def mousePressed (e: MouseEvent) {}
+	    })
+  }
   
   
   // ---------------------- Methoden -------------------------------
@@ -415,7 +452,7 @@ class Control {
   
   // adds the name of the labels to the new relation list
   def addRelationLabels(str: String) {
-    var list = model.getRelationList
+    var list = model.relationList.toList
     if (str.equals("Group:")) {
       var l = new ListBuffer[JLabel]
       l += new JLabel("")
@@ -425,12 +462,42 @@ class Control {
       }
       model.relationList = l
       list = model.fill(l.toList, 26)
+    } else {
+      var newlist = new ListBuffer[JLabel]
+      newlist += new JLabel("")
+      for (l <- list) {
+        if (!l.getText.equals(""))
+      		newlist += l
+      }
+      var copy = new ListBuffer[String]
+      for (n <- newlist)
+        copy += n.getText
+      for (i <- model.imageList) {
+        if (!i.getText.isEmpty) {
+        	if (i.isEnabled) {
+    			if (!copy.contains(i.getText)) {
+    				newlist += i
+    			}
+        	} else {
+        		if (copy.contains(i.getText)) {
+        		  var counter = 0
+        		  for (n <- newlist)
+        		    if (n.getText.equals(i.getText))
+        		      newlist.remove(counter)
+        		    else
+        		      counter += 1
+        		}
+        	}       
+        }
+      }
+      model.relationList = newlist
+      list = model.fill(newlist.toList, 26)
     }
     view.relation.removeAll
     for (i <- list) {
       var label = new JLabel(i.getText)
-//      if (!i.getText.isEmpty)
-//        addMouseListenerRelation(label)
+      if (!i.getText.isEmpty)
+        addMouseListenerRelation(label)
       view.relation.add(label)
     }
   }
@@ -552,8 +619,8 @@ class Control {
     view.relation.removeAll
     for (i <- list) {
       var label = new JLabel(i.getText)
-//      if (!i.getText.isEmpty)
-//        addMouseListenerRelation(label)
+      if (!i.getText.isEmpty)
+        addMouseListenerRelation(label)
       view.relation.add(label)
     }
   }
@@ -606,46 +673,5 @@ class Control {
 	      addLabels(false)
 	    }
   }
-   
-   // mouse listener for clickable relation files
-//   def addMouseListenerRelation(label: JLabel) {
-//    label.addMouseListener( new MouseListener {
-//		  def mouseClicked(e:MouseEvent) {
-//		    var list = model.getRelationList
-//		    var buffer = new ListBuffer[JLabel]
-//		    for (b <- list) {
-//		      buffer += b
-//		    }
-//			  for (l <- buffer) {
-//			    l.setFocusable(false)
-//			    if (l.getText.equals(label.getText)) {
-//			    	l.setText("<html><body><span style=\"background-color: #87CEFA\";><b>" + label.getText + "</b></span></body></html>")
-//			    	l.setFocusable(true)
-//			    }
-//			  }
-//		      view.relation.removeAll
-//			  for (i <- buffer) {
-//			    var l = new JLabel(i.getText)
-//			    if (!i.isFocusable) {
-//			      addMouseListenerRelation(l)
-//			    }
-//			    view.relation.add(l)
-//			  }
-//			  model.relationList = buffer
-////			  addLabels(false)
-////			  for (i <- model.imageList) {
-////				for (r <- model.relationList) {
-////				  if (i.getText.equals(r.getText))
-////				    i.setEnabled(true)
-////				}  
-////			  }
-//			  view.panel.updateUI
-//		  }
-//		  def mouseExited (e: MouseEvent) {}
-//		  def mouseEntered (e: MouseEvent) {}
-//		  def mouseReleased (e: MouseEvent) {}
-//		  def mousePressed (e: MouseEvent) {}
-//	    })
-//  }
   
 }
