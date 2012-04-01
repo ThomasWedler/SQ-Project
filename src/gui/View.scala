@@ -63,7 +63,7 @@ class View extends Frame {
 	var sl_leftdown = new SpringLayout
 	var sl_name = new SpringLayout
 	var layoutOverview = new GridLayout(0,1)
-
+	
 	panel.setLayout(springLayout);
 	leftup.setLayout(sl_leftup);
 	right.setLayout(sl_right);
@@ -80,7 +80,7 @@ class View extends Frame {
     minimumSize = new Dimension(1280, 800)
     centerOnScreen
 	resizable = false
-	
+		
 	var menu = new JMenuBar
 	var mnEdit = new JMenu("Edit")
 	var mnFile = new JMenu("File")
@@ -293,5 +293,8 @@ class View extends Frame {
 	
 	visible = true
 
+	override def closeOperation {
+	  System.exit(0)
+	}
   
 }

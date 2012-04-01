@@ -20,6 +20,7 @@ import javax.swing.filechooser.FileNameExtensionFilter
 import javax.swing.BorderFactory
 import javax.swing.ImageIcon
 import javax.swing.SwingConstants
+import java.awt.Dimension
 
 // Verwaltung der darzustellenden Daten
 
@@ -35,8 +36,8 @@ class Control {
   undomanager.setLimit(1000)
   view.name.getDocument.addUndoableEditListener(undomanager)
 
-    
   refresh
+
   
   // ---------------------- Action Listener -------------------------------
   
@@ -187,8 +188,8 @@ class Control {
 				    model.imageList.remove(i => bool: Boolean)
 				  }
 			  }
-		    for (f <- thomas.walkthrough()) {
-		      if (thomas.checkName(f, file))
+		    for (f <- thomas.walkthrough) {
+		      if (f.getName.equals(file.getName))
 		        f.delete()
 		    }
 		    refresh
@@ -337,12 +338,7 @@ class Control {
 			    if (f.getName.equals(name))
 			      file = f
 			  }
-			  var focused = false
-			  for (l <- model.overviewList) {
-			    if (l.isFocusable)
-			      focused = true
-			  }
-			  if (!focused) {
+			  if (!view.annotation.isVisible) {
 				  loadRelation(file)
 				  refreshOverview(label)
 			  } else {
@@ -469,8 +465,6 @@ class Control {
     	}
   }
   
-  
-  
    // converts a list of jlabels to a list of files
   def convertToFilelist(list: List[JLabel]) = {
     var newList = new ListBuffer[File]
@@ -495,7 +489,7 @@ class Control {
 	  result
 	}
   
-    // delete question with the answer as return
+  // delete question with the answer as return
   def deleteQuestion = {
     var result = "none"
 	    var options: Array[Object] = Array("No", "Yes")
@@ -509,25 +503,61 @@ class Control {
   
   // reads a txt file and adds for each line a label to the relation list
   def loadRelation(f: File) = {
+    refresh
     var br = new BufferedReader(new FileReader(f))
-    var list = new ListBuffer[String]
-    var zeile = br.readLine()
+    var list = new ListBuffer[JLabel]
+    var zeile = br.readLine
 	while (zeile != null) {
-		list += zeile
-		zeile = br.readLine()
+		list += new JLabel(zeile)
+		zeile = br.readLine
 	}
-	setAnnotationPanel(list.first, true)
+	setAnnotationPanel(list.first.getText, true)
 	view.name.setText(f.getName.substring(0, f.getName.length-4))
 	addLabels(false)
 	for (i <- model.imageList) {
-	  if (list.contains(i.getText))
-	    i.setEnabled(true)
+	  for(j <- list)
+		  if (i.getText.equals(j.getText))
+			  i.setEnabled(true)
 	}
-	addRelationLabels(list.first)
+    if (list.first.getText.equals("Group")) {
+      var l = new ListBuffer[JLabel]
+      l += new JLabel("")
+      for (i <- model.imageList) {
+        if (i.isEnabled)
+          l += i
+      }
+      var diff = 0
+      var length = l.length
+      if (length <= 26) 
+        diff = 26 - length
+      for (i <- 1 to diff)
+        l += new JLabel("")
+      model.relationList = l
+      list = l
+    } else {
+      var l = new ListBuffer[JLabel]
+      l += new JLabel("")
+      for (item <- list)
+        if (!item.getText.equals("List"))
+        	l += item
+      var diff = 0
+      var length = l.length
+      if (length <= 26) 
+        diff = 26 - length
+      for (i <- 1 to diff)
+        l += new JLabel("")
+      model.relationList = l
+      list = l
+    }
+    view.relation.removeAll
+    for (i <- list) {
+      var label = new JLabel(i.getText)
+//      if (!i.getText.isEmpty)
+//        addMouseListenerRelation(label)
+      view.relation.add(label)
+    }
   }
   
-  
-   
    // refreshs the overview for load relation purposes
    def refreshOverview(label: JLabel) {
       var list = model.getOverviewList

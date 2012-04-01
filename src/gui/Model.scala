@@ -62,7 +62,7 @@ class Model {
 		    label.setVerticalTextPosition(Alignment.Bottom.id)
 		    label.setHorizontalTextPosition(Alignment.Center.id)
 		    label.setFocusable(false)
-		    label.setPreferredSize(new Dimension(100, label.getHeight()))
+		    label.setPreferredSize(new Dimension(100, label.getHeight))
 		    list += label
 		  }
 	  }

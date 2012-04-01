@@ -65,19 +65,8 @@ class Thomas {
 	  check
 	}
 	
-	// returns, wether the both files have the same name
-	def checkName(f1: File, f2: File) = {
-	  var check = false
-	  var name1 = f1.getName
-	  var name2 = f2.getName
-	  if (name1.equals(name2)) {
-		  check = true
-	  }
-	  check
-	}
-	
 	// walks through the filesystem and returns a list containing all files (no directories) 
-	def walkthrough() = {
+	def walkthrough = {
 	  var list = new ListBuffer[File]
 	  	for (f <- new File("filesystem/").listFiles) {
 	  	  if (f.listFiles != null && !f.getName.equals("thumbnails")) {
@@ -94,7 +83,7 @@ class Thomas {
 	def overwrite(f: File) = {
 	  var result = "none"
 	  for (file <- walkthrough) {
-		if (checkName(f, file))
+		if (f.getName.equals(file.getName))
 			result = overwriteQuestion(f)
 		}
 	  result
