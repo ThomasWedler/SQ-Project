@@ -51,7 +51,7 @@ class Model {
     var filesystem = thomas.walkthrough
     if (!filesystem.isEmpty) {
       for (f <- filesystem) {
-        var image = new ImageIcon("src/resources/Vlc.png")
+        var image = new ImageIcon("src/resources/rel.png")
         if (!thumbnail.isThumb(f.getName))
           thumbnail.mkThumb(f.getName)
         if (!thomas.getType(f).equals("txt")) {
