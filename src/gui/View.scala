@@ -54,6 +54,9 @@ class View extends Frame {
 	var btnSave = new JButton("Save")
 	var btnCancel = new JButton("Cancel")
 	
+	var btnUp = new JButton("^")
+	var btnDown = new JButton("v")
+	
 	var name = new JTextField
 	
 	var springLayout = new SpringLayout
@@ -76,7 +79,6 @@ class View extends Frame {
 	var sp_mid = new JScrollPane(mid)
 	var sp_overview = new JScrollPane(overview)
 	var sp_relation = new JScrollPane(relation)
-//	relation.setBorder(new LineBorder(Color.RED, 1))
 	
     minimumSize = new Dimension(1280, 800)
     centerOnScreen
@@ -194,7 +196,7 @@ class View extends Frame {
 	
 	sl_right.putConstraint(SpringLayout.NORTH, sp_relation, 25, SpringLayout.SOUTH, annotation);
 	sl_right.putConstraint(SpringLayout.WEST, sp_relation, 0, SpringLayout.WEST, right);
-	sl_right.putConstraint(SpringLayout.SOUTH, sp_relation, -10, SpringLayout.NORTH, btnPlay);
+	sl_right.putConstraint(SpringLayout.SOUTH, sp_relation, -10, SpringLayout.NORTH, btnUp);
 	sl_right.putConstraint(SpringLayout.EAST, sp_relation, 0, SpringLayout.EAST, right);
 	
 	sl_name.putConstraint(SpringLayout.NORTH, lblName, 5, SpringLayout.NORTH, annotation);
@@ -233,6 +235,11 @@ class View extends Frame {
 	btnSave.setVisible(false)
 	btnCancel.setVisible(false)
 	sp_relation.setVisible(false)
+	btnUp.setVisible(false)
+	btnDown.setVisible(false)
+	
+	btnUp.setEnabled(false)
+	btnDown.setEnabled(false)
 	
 	mntmSave.setEnabled(false)
 	mntmPlay.setEnabled(false)
@@ -289,6 +296,18 @@ class View extends Frame {
 	sl_right.putConstraint(SpringLayout.WEST, btnPlay, 0, SpringLayout.WEST, right);
 	sl_right.putConstraint(SpringLayout.EAST, btnPlay, 0, SpringLayout.EAST, right);
 	right.add(btnPlay);
+	
+	sl_right.putConstraint(SpringLayout.SOUTH, btnUp, -10, SpringLayout.NORTH, btnPlay);
+	sl_right.putConstraint(SpringLayout.WEST, btnUp, -35, SpringLayout.WEST, btnDown);
+	sl_right.putConstraint(SpringLayout.EAST, btnUp, -35, SpringLayout.EAST, btnDown);
+	sl_right.putConstraint(SpringLayout.NORTH, btnUp, -45, SpringLayout.NORTH, btnPlay);
+	right.add(btnUp);
+	
+	sl_right.putConstraint(SpringLayout.SOUTH, btnDown, 0, SpringLayout.SOUTH, btnUp);
+	sl_right.putConstraint(SpringLayout.WEST, btnDown, -45, SpringLayout.EAST, right);
+	sl_right.putConstraint(SpringLayout.EAST, btnDown, -10, SpringLayout.EAST, right);
+	sl_right.putConstraint(SpringLayout.NORTH, btnDown, 0, SpringLayout.NORTH, btnUp);
+	right.add(btnDown);
 	
 	contents = Component.wrap(panel)
 	

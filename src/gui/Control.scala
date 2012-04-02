@@ -143,6 +143,7 @@ class Control {
       if (answer.equals("Yes")) {
         var result = thomas.overwrite(new File("filesystem/relations/" + view.name.getText + ".txt"))
         if (result.equals("Yes") || result.equals("none")) {
+          cleanRelations
           var list = convertToFilelist(model.relationList.toList)
           new Annotation(view.lblName.getText, view.name.getText, list)
           refresh
@@ -162,6 +163,7 @@ class Control {
       if (answer.equals("Yes")) {
         var result = thomas.overwrite(new File("filesystem/relations/" + view.name.getText + ".txt"))
         if (result.equals("Yes") || result.equals("none")) {
+          cleanRelations
           var list = convertToFilelist(model.relationList.toList)
           new Annotation(view.lblName.getText, view.name.getText, list)
           refresh
@@ -173,6 +175,18 @@ class Control {
       }
     }
   })
+  
+  //
+  def cleanRelations {
+    var list = model.relationList
+    for (l <- list)
+      if (l.getText.startsWith("<html>")) {
+        var name = l.getText.replace("<html><body><span style=\"background-color: #87CEFA\";><b>", "")
+        name = name.replace("</b></span></body></html>", "")
+        l.setText(name)
+      }
+    model.relationList = list
+  }
 
   // delete file
   view.mntmDelete.addActionListener(new ActionListener {
@@ -267,6 +281,22 @@ class Control {
     }
   })
 
+  // button up
+  view.btnUp.addActionListener(new ActionListener {
+    def actionPerformed(e: ActionEvent) {
+      view.btnDown.setEnabled(true)
+      moveUp
+    }
+  })
+  
+  // button down
+  view.btnDown.addActionListener(new ActionListener {
+    def actionPerformed(e: ActionEvent) {
+      view.btnUp.setEnabled(true)
+      moveDown
+    }
+  })
+
   // ---------------------- Mouse Listener -------------------------------
 
   // adds a mouse listener to a jlabel in the relation mode, that turns them en-/disabled
@@ -278,6 +308,8 @@ class Control {
         } else {
           label.setEnabled(false)
         }
+        view.btnUp.setEnabled(false)
+        view.btnDown.setEnabled(false)
         addRelationLabels(view.lblName.getText)
         view.panel.updateUI
       }
@@ -412,6 +444,19 @@ class Control {
         addLabels(false)
         view.mntmPlay.setEnabled(true)
         var list = model.relationList
+        var buffer = new ListBuffer[JLabel]
+        for (l <- list) {
+          if (!l.getText.isEmpty)
+        	  buffer += l
+        }
+        if (view.lblName.getText.equals("List:")) {
+          view.btnUp.setEnabled(true)
+          view.btnDown.setEnabled(true)
+        }
+        if (label.getText.equals(buffer.first.getText))
+          view.btnUp.setEnabled(false)
+        if (label.getText.equals(buffer.last.getText))
+          view.btnDown.setEnabled(false)
         for (l <- list) {
           if (l.isFocusable) {
             var name = l.getText.replace("<html><body><span style=\"background-color: #87CEFA\";><b>", "")
@@ -513,6 +558,7 @@ class Control {
           var name = l.getText.replace("<html><body><span style=\"background-color: #87CEFA\";><b>", "")
           name = name.replace("</b></span></body></html>", "")
           l.setText(name)
+          l.setFocusable(false)
         }
         if (!l.getText.equals(""))
           newlist += l
@@ -570,6 +616,8 @@ class Control {
       view.sp_relation.setVisible(true)
       model.relationList = new ListBuffer[JLabel]
       view.mntmSave.setEnabled(true)
+      view.btnUp.setVisible(true)
+      view.btnDown.setVisible(true)
     } else {
       view.mntmRefresh.setEnabled(true)
       view.mntmOpen.setEnabled(true)
@@ -578,6 +626,8 @@ class Control {
       view.btnCancel.setVisible(false)
       view.sp_relation.setVisible(false)
       view.mntmSave.setEnabled(false)
+      view.btnUp.setVisible(false)
+      view.btnDown.setVisible(false)
     }
   }
 
@@ -707,6 +757,65 @@ class Control {
       setAnnotationPanel(s, true)
       addLabels(false)
     }
+  }
+
+  def moveUp {
+    var list = model.relationList
+    var copy = list
+    var cache = new JLabel("")
+    var counter = -1
+    for (l <- copy) {
+      counter += 1
+      if (l.getText.startsWith("<html>")) {
+        if (counter == 1)
+        	view.btnUp.setEnabled(false)
+        cache = list(counter - 1)
+        list(counter - 1) = l
+        list(counter) = cache
+      }
+    }
+    list = model.fill(list, 26)
+    view.relation.removeAll
+    for (i <- list) {
+      var l = new JLabel(i.getText)
+      if (!i.isFocusable && !i.getText.isEmpty) {
+        addMouseListenerRelation(l)
+      }
+      view.relation.add(l)
+    }
+    model.relationList = list
+    view.panel.updateUI
+  }
+  
+  def moveDown {
+    var list = model.relationList
+    var copy = new ListBuffer[JLabel]
+    for (l <- list)
+      if (!l.getText.isEmpty)
+    	  copy += l
+    var cache = new JLabel("")
+    var counter = -1
+    for (l <- copy) {
+      counter += 1
+      if (l.getText.startsWith("<html>")) {
+        if (list(counter+2).getText.isEmpty)
+        	view.btnDown.setEnabled(false)
+        cache = list(counter + 1)
+        list(counter + 1) = l
+        list(counter) = cache
+      }
+    }
+    list = model.fill(list, 26)
+    view.relation.removeAll
+    for (i <- list) {
+      var l = new JLabel(i.getText)
+      if (!i.isFocusable && !i.getText.isEmpty) {
+        addMouseListenerRelation(l)
+      }
+      view.relation.add(l)
+    }
+    model.relationList = list
+    view.panel.updateUI
   }
 
 }
