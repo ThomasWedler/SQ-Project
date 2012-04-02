@@ -9,6 +9,8 @@ class Config {
   // Set path and filename of configuration file
   val configFile = "config.xml"
 
+  tryConfig
+    
   /** Checks if configuration file exits and contains valid values.
     * In case file doesn't exists it is created and filled with standard values.
     */
@@ -20,7 +22,6 @@ class Config {
       } catch {
         case io: IOException => println("No configuration file found. Failed to create a new one.")
       }
-      var config = scala.xml.XML.loadFile(configFile)
       
       // Create XML-Elements with empty values.
       val newJpgRead = Elem(null, "read", Null, TopScope, Text(""))
@@ -36,7 +37,7 @@ class Config {
       
       var prettyfier = new scala.xml.PrettyPrinter(80, 2)
       val header = """<?xml version="1.0" encoding="UTF-8" ?>""" + "\n"
-      val prettyConfig = header + prettyfier.format(config)
+      val prettyConfig = header + prettyfier.format(newConfig)
       val xmlFile: File = new File(configFile)
       try {
         FileUtils.write(xmlFile, prettyConfig, "UTF-8")
@@ -64,7 +65,6 @@ class Config {
     * @return reader for given filetype (String).
     */
   def getReader(filetype: String): String = {
-    tryConfig()
     val config = scala.xml.XML.loadFile(configFile)
     if (filetype == "jpg") {
       return (config \\ "config" \\ "jpg" \ "read").text
@@ -83,7 +83,6 @@ class Config {
     * @return editor for given filetype (String).
     */
   def getEditor(filetype: String): String = {
-    tryConfig()
     val config = scala.xml.XML.loadFile(configFile)
     if (filetype == "jpg") {
       return (config \\ "config" \\ "jpg" \ "edit").text
@@ -102,7 +101,6 @@ class Config {
     * @param reader (String).
     */
   def setReader(filetype: String, reader: String) {
-    tryConfig()
     var config = scala.xml.XML.loadFile(configFile)
 
     // Read in specific values out of the configuration file.
@@ -148,7 +146,6 @@ class Config {
     * @param editor (String).
     */
   def setEditor(filetype: String, editor: String) {
-    tryConfig()
     var config = scala.xml.XML.loadFile(configFile)
 
     // Read in specific values out of the configuration file.

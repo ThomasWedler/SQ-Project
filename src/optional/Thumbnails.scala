@@ -63,9 +63,9 @@ class Thumbnails {
       path = path + "jpg/"
       thumbnailFile = path + file
     } else if (extension == "pdf") {
-      thumbnailFile = path + "pdf/" + file.split('.').init :+ "jpg" mkString "."
+      thumbnailFile = path + "pdf/" + file.replace(".pdf", ".jpg")
     } else if (extension == "mp4") {
-      thumbnailFile = path + "mp4/" + file.split('.').init :+ "jpg" mkString "."
+      thumbnailFile = path + "mp4/" + file.replace(".mp4", ".jpg")
     }
     return thumbnailFile
   }
@@ -77,7 +77,7 @@ class Thumbnails {
   def mkThumb(file: String) {
     // Width and height of thumbnail
     var thumbWidth: Int = 100
-    var thumbHeight: Int = 100
+    var thumbHeight: Int = 75
 
     var extension = file.substring(file.lastIndexOf(".") + 1)
     var image: Image = null
@@ -99,7 +99,7 @@ class Thumbnails {
     } else if (extension == "pdf") {
       val path = "filesystem/pdf/"
       var filename = path + file
-      thumbnailFile = "filesystem/thumbnails/pdf/" + file.split('.').init :+ "jpg" mkString "."
+      thumbnailFile = "filesystem/thumbnails/pdf/" + file.replace(".pdf", ".jpg")
 
       var pdfFilename: File = new File(filename)
       var raf: RandomAccessFile = new RandomAccessFile(pdfFilename, "r")
@@ -124,7 +124,7 @@ class Thumbnails {
     } else if (extension == "mp4") {
       val path = "filesystem/mp4/"
       var filename = path + file
-      var thumbnailFile = "filesystem/thumbnails/mp4/" + file.split('.').init :+ "jpg" mkString "."
+      var thumbnailFile = "filesystem/thumbnails/mp4/" + file.replace(".mp4", ".jpg")
 
       /*
        * The following is an adaption of
@@ -199,7 +199,8 @@ class Thumbnails {
       thumbWidth = imageWidth
     } else if (imageHeight < thumbHeight) {
       thumbHeight = imageHeight
-    }
+    } else
+      thumbHeight = 75
 
     var thumbImage: BufferedImage = new BufferedImage(thumbWidth, thumbHeight, BufferedImage.TYPE_INT_RGB)
     var graphics2D: Graphics2D = thumbImage.createGraphics()

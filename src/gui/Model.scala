@@ -18,69 +18,87 @@ import optional.Thumbnails
 // verwaltet die darzustellenden Daten
 
 class Model {
-  
+
   var thomas = new Thomas
   var thumbnail = new Thumbnails
-  
+
   var imageList = getImageList
   var overviewList = getOverviewList
 
   var relationList = new ListBuffer[JLabel]
-  
-//  def filter(isIn: (Int) => Boolean) {
-//    items.foreach(i => if(isIn(i))
-//  }
-//  
-//  
-//  def myIsIn(item: Int): Boolean =
-//    item < 5
-//  
-//  var l = 1 :: 2 :: 3 :: 4 :: 5 :: Nil
-//  var l2 = List(1,2,3,4,5)
-//  
-//  var myFunctionVariable: (Int) => Boolean = myIsIn 
-//  
-//  var l3 = l.filter(_ < 5)
-//  
-//  var x = 3
-//  l3.append(3)
-    
+
+  //  def filter(isIn: (Int) => Boolean) {
+  //    items.foreach(i => if(isIn(i))
+  //  }
+  //  
+  //  
+  //  def myIsIn(item: Int): Boolean =
+  //    item < 5
+  //  
+  //  var l = 1 :: 2 :: 3 :: 4 :: 5 :: Nil
+  //  var l2 = List(1,2,3,4,5)
+  //  
+  //  var myFunctionVariable: (Int) => Boolean = myIsIn 
+  //  
+  //  var l3 = l.filter(_ < 5)
+  //  
+  //  var x = 3
+  //  l3.append(3)
+
   // walks through the filesystem and creates a list containing a label for each file
   def getImageList = {
-	  var list = new ListBuffer[JLabel]
-	  var filesystem = thomas.walkthrough
-	  if (!filesystem.isEmpty) {
-		  for (f <- filesystem) {
-		    var image = new ImageIcon("src/resources/Vlc.png")
-		    if (!thumbnail.isThumb(f.getName))
-		    	thumbnail.mkThumb(f.getName)
-		    if (!thomas.getType(f).equals("txt")) {
-		    	image = new ImageIcon(thumbnail.getThumb(f.getName))
-		    } 
-		    var label = new JLabel(f.getName, image, Alignment.Center.id)
-		    var labelLong = new JLabel(f.getName)
-		    label.setVerticalTextPosition(Alignment.Bottom.id)
-		    label.setHorizontalTextPosition(Alignment.Center.id)
-		    label.setFocusable(false)
-		    label.setPreferredSize(new Dimension(100, label.getHeight))
-		    list += label
-		  }
-	  }
-	  fill(list.toList, 36)
+    var list = new ListBuffer[JLabel]
+    var filesystem = thomas.walkthrough
+    if (!filesystem.isEmpty) {
+      for (f <- filesystem) {
+        var image = new ImageIcon("src/resources/Vlc.png")
+        if (!thumbnail.isThumb(f.getName))
+          thumbnail.mkThumb(f.getName)
+        if (!thomas.getType(f).equals("txt")) {
+          image = new ImageIcon(thumbnail.getThumb(f.getName))
+        }
+        var label = new JLabel(f.getName, image, Alignment.Center.id)
+        var labelLong = new JLabel(f.getName)
+        label.setVerticalTextPosition(Alignment.Bottom.id)
+        label.setHorizontalTextPosition(Alignment.Center.id)
+        label.setFocusable(false)
+        label.setPreferredSize(new Dimension(100, label.getHeight))
+        list += label
+      }
+    }
+    fill(list.toList, 36)
   }
-  
+
   // if the list is smaller than a given number of items, it fills the empty cells with labels
   def fill(list: List[JLabel], count: Int) = {
     var filledList = list.toBuffer
     var diff = 0
     var length = list.length
-    if (length <= count) 
+    if (length <= count)
       diff = count - length
-    for (i <- 1 to diff)
-      filledList += new JLabel("")
+    for (i <- 1 to diff) {
+      var label = new JLabel("")
+      label.setFocusable(false)
+      filledList += label
+    }
     filledList.toList
   }
-  
+
+  // 
+  def fill(list: ListBuffer[JLabel], count: Int) = {
+    var filledList = list
+    var diff = 0
+    var length = list.length
+    if (length <= count)
+      diff = count - length
+    for (i <- 1 to diff) {
+      var label = new JLabel("")
+      label.setFocusable(false)
+      filledList += label
+    }
+    filledList
+  }
+
   // fills the overview panel with the right filenames 
   def getOverviewList = {
     var list = new ListBuffer[JLabel]
@@ -89,42 +107,42 @@ class Model {
     checkContent("  JPG", "jpg", list)
     checkContent("  MP4", "mp4", list)
     checkContent("  PDF", "pdf", list)
-	var newlist = fill(list.toList, 34)
-	for (n <- newlist)
-	  n.setFocusable(false)
-	newlist.toList
+    var newlist = fill(list.toList, 34)
+    for (n <- newlist)
+      n.setFocusable(false)
+    newlist.toList
   }
-  
+
   // checks the filesystem for directory contents and adds them to the overview list
   def checkContent(name: String, s: String, list: ListBuffer[JLabel]) = {
     var counter = 0
-	var filesystem = thomas.walkthrough
-	list += new JLabel(name)
-	for (f <- filesystem) {
-	  if (thomas.getType(f).equals(s)) {
-		  var label = new JLabel("      " + f.getName)
-		  list += label
-		  counter += 1
-	  }
-	}
+    var filesystem = thomas.walkthrough
+    list += new JLabel(name)
+    for (f <- filesystem) {
+      if (thomas.getType(f).equals(s)) {
+        var label = new JLabel("      " + f.getName)
+        list += label
+        counter += 1
+      }
+    }
     if (counter == 0)
       list += new JLabel("      <empty>")
     list += new JLabel("")
     list
   }
-  
+
   // fills the relation list from the image icon content
-  def getRelationList = {
-	for (i <- imageList) {
-	  if (i.isEnabled && !i.getText.isEmpty) {
-	    if (!relationList.contains(i))
-	      relationList += i
-	  } else {
-	    if (relationList.contains(i))
-	      relationList -= i
-	  }
-	}
-	fill(relationList.toList, 26)
-  }
-  
+  //  def getRelationList = {
+  //	for (i <- imageList) {
+  //	  if (i.isEnabled && !i.getText.isEmpty) {
+  //	    if (!relationList.contains(i))
+  //	      relationList += i
+  //	  } else {
+  //	    if (relationList.contains(i))
+  //	      relationList -= i
+  //	  }
+  //	}
+  //	fill(relationList.toList, 26)
+  //  }
+
 }

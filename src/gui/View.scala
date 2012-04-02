@@ -76,6 +76,7 @@ class View extends Frame {
 	var sp_mid = new JScrollPane(mid)
 	var sp_overview = new JScrollPane(overview)
 	var sp_relation = new JScrollPane(relation)
+//	relation.setBorder(new LineBorder(Color.RED, 1))
 	
     minimumSize = new Dimension(1280, 800)
     centerOnScreen
@@ -191,7 +192,7 @@ class View extends Frame {
 	sl_leftup.putConstraint(SpringLayout.SOUTH, sp_overview, 0, SpringLayout.SOUTH, leftup);
 	sl_leftup.putConstraint(SpringLayout.EAST, sp_overview, 0, SpringLayout.EAST, leftup);
 	
-	sl_right.putConstraint(SpringLayout.NORTH, sp_relation, 0, SpringLayout.SOUTH, annotation);
+	sl_right.putConstraint(SpringLayout.NORTH, sp_relation, 25, SpringLayout.SOUTH, annotation);
 	sl_right.putConstraint(SpringLayout.WEST, sp_relation, 0, SpringLayout.WEST, right);
 	sl_right.putConstraint(SpringLayout.SOUTH, sp_relation, -10, SpringLayout.NORTH, btnPlay);
 	sl_right.putConstraint(SpringLayout.EAST, sp_relation, 0, SpringLayout.EAST, right);

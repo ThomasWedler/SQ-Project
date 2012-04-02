@@ -9,6 +9,7 @@ object Main {
   // initialisation
   def main(args: Array[String]) {
 	  createFilesystem
+	  new Config
 	  // comment out for vlc-debugging -> in most cases problems are related to 32/64bit issues 
 	  //System.load("C:\\Program Files (x86)\\VideoLAN\\VLC\\libvlc.dll")
 	  new Control
