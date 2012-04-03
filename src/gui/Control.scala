@@ -132,14 +132,6 @@ class Control {
   // cancel button in relation mode
   view.btnCancel.addActionListener(new ActionListener {
     def actionPerformed(e: ActionEvent) {
-      refresh
-      setAnnotationPanel(null, false)
-    }
-  })
-
-  // save relation
-  view.btnSave.addActionListener(new ActionListener {
-    def actionPerformed(e: ActionEvent) {
       var answer = saveQuestion
       if (answer.equals("Yes")) {
         var result = thomas.overwrite(new File("filesystem/relations/" + view.name.getText + ".txt"))
@@ -158,21 +150,25 @@ class Control {
   })
 
   // save relation
+  view.btnSave.addActionListener(new ActionListener {
+    def actionPerformed(e: ActionEvent) {
+      var result = thomas.overwrite(new File("filesystem/relations/" + view.name.getText + ".txt"))
+      if (result.equals("Yes") || result.equals("none")) {
+        cleanRelations
+        var list = convertToFilelist(model.relationList.toList)
+        new Annotation(view.lblName.getText, view.name.getText, list)
+      }
+    }
+  })
+
+  // save relation
   view.mntmSave.addActionListener(new ActionListener {
     def actionPerformed(e: ActionEvent) {
-      var answer = saveQuestion
-      if (answer.equals("Yes")) {
-        var result = thomas.overwrite(new File("filesystem/relations/" + view.name.getText + ".txt"))
-        if (result.equals("Yes") || result.equals("none")) {
-          cleanRelations
-          var list = convertToFilelist(model.relationList.toList)
-          new Annotation(view.lblName.getText, view.name.getText, list)
-          refresh
-          setAnnotationPanel(null, false)
-        }
-      } else if (answer.equals("No")) {
-        refresh
-        setAnnotationPanel(null, false)
+      var result = thomas.overwrite(new File("filesystem/relations/" + view.name.getText + ".txt"))
+      if (result.equals("Yes") || result.equals("none")) {
+        cleanRelations
+        var list = convertToFilelist(model.relationList.toList)
+        new Annotation(view.lblName.getText, view.name.getText, list)
       }
     }
   })
@@ -420,6 +416,11 @@ class Control {
                 file = f
             }
             loadRelation(file)
+          } else {
+            var filename = label.getText
+            var ending = filename.substring(label.getText.length - 3, label.getText.length)
+            var file = new File("filesystem/" + ending + "/" + filename)
+            david.openReader(file)
           }
           var list = model.getOverviewList
           for (l <- list) {
@@ -430,14 +431,16 @@ class Control {
             }
           }
           view.overview.removeAll
-          for (i <- list) {
-            var l = new JLabel(i.getText)
-            if (!i.isFocusable) {
-              if (!i.getText.isEmpty && i.getText.substring(i.getText.length - 3, i.getText.length).equals("txt"))
-                addMouseListenerLoad(l)
-            }
-            view.overview.add(l)
+          var listTXT = list.filter(l => filterTXT(l))
+          for (l <- listTXT) {
+            var label = new JLabel(l.getText)
+            for (item <- list)
+              if (l.getText.equals(item.getText)) {
+                addMouseListenerLoad(item)
+              }
           }
+          for (i <- list)
+            view.overview.add(i)
           model.overviewList = list
         }
         for (i <- model.imageList) {
@@ -618,14 +621,16 @@ class Control {
   def addOverviewLabels {
     var list = model.getOverviewList
     view.overview.removeAll
-    for (i <- list) {
-      var label = new JLabel(i.getText)
-      if (!i.isFocusable) {
-        if (!i.getText.isEmpty && i.getText.substring(i.getText.length - 3, i.getText.length).equals("txt"))
-          addMouseListenerLoad(label)
-      }
-      view.overview.add(label)
+    var listTXT = list.filter(l => filterTXT(l))
+    for (l <- listTXT) {
+      var label = new JLabel(l.getText)
+      for (item <- list)
+        if (l.getText.equals(item.getText)) {
+          addMouseListenerLoad(item)
+        }
     }
+    for (i <- list)
+      view.overview.add(i)
     model.overviewList = list
   }
 
@@ -633,6 +638,7 @@ class Control {
   def addRelationLabels(str: String) {
     var list = model.relationList.toList
     view.mntmPlay.setEnabled(false)
+    view.btnPlay.setEnabled(false)
     if (str.equals("Group:")) {
       var l = new ListBuffer[JLabel]
       for (i <- model.imageList) {
@@ -711,6 +717,7 @@ class Control {
       view.btnDown.setVisible(true)
       view.mntmEdit.setEnabled(false)
       view.mntmPlay.setEnabled(false)
+      view.btnPlay.setEnabled(false)
     } else {
       view.mntmRefresh.setEnabled(true)
       view.mntmDelete.setEnabled(false)
@@ -816,14 +823,16 @@ class Control {
       }
     }
     view.overview.removeAll
-    for (i <- list) {
-      var l = new JLabel(i.getText)
-      if (!i.isFocusable) {
-        if (!i.getText.isEmpty && i.getText.substring(i.getText.length - 3, i.getText.length).equals("txt"))
-          addMouseListenerLoad(l)
-      }
-      view.overview.add(l)
+    var listTXT = list.filter(l => filterTXT(l))
+    for (l <- listTXT) {
+      var label = new JLabel(l.getText)
+      for (item <- list)
+        if (l.getText.equals(item.getText)) {
+          addMouseListenerLoad(item)
+        }
     }
+    for (i <- list)
+      view.overview.add(i)
     model.overviewList = list
   }
 
@@ -912,6 +921,15 @@ class Control {
     }
     model.relationList = list
     view.panel.updateUI
+  }
+
+  // filter for txt
+  def filterTXT(label: JLabel) = {
+    var bool = false
+    if (!label.getText.isEmpty) {
+      bool = label.getText.substring(label.getText.length - 3, label.getText.length).equals("txt")
+    }
+    bool
   }
 
 }

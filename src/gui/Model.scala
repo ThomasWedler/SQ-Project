@@ -134,18 +134,4 @@ class Model {
     list
   }
 
-  // fills the relation list from the image icon content
-  //  def getRelationList = {
-  //	for (i <- imageList) {
-  //	  if (i.isEnabled && !i.getText.isEmpty) {
-  //	    if (!relationList.contains(i))
-  //	      relationList += i
-  //	  } else {
-  //	    if (relationList.contains(i))
-  //	      relationList -= i
-  //	  }
-  //	}
-  //	fill(relationList.toList, 26)
-  //  }
-
 }

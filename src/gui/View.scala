@@ -154,7 +154,15 @@ class View extends Frame {
 	mnFile.setMnemonic(KeyEvent.VK_F);
 	mntmRefresh.setMnemonic(KeyEvent.VK_R)
 	mntmDelete.setMnemonic(KeyEvent.VK_D)
-	
+	mntmConfig.setMnemonic(KeyEvent.VK_C)
+	mntmPlay.setMnemonic(KeyEvent.VK_P)
+	mntmEdit.setMnemonic(KeyEvent.VK_F)
+	mntmLoad.setMnemonic(KeyEvent.VK_L)
+
+	mntmConfig.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
+    mntmPlay.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK));
+	mntmLoad.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_MASK));
+	mntmEdit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_MASK));
 	mntmDelete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_MASK));
 	mntmRefresh.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
 	mntmQuit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, InputEvent.ALT_MASK));
