@@ -52,9 +52,12 @@ class Model {
     if (!filesystem.isEmpty) {
       for (f <- filesystem) {
         var image = new ImageIcon("src/resources/rel.png")
-        if (!thumbnail.isThumb(f.getName))
+        if (!thumbnail.isThumb(f.getName) && !thomas.getType(f).equals("mp4"))
           thumbnail.mkThumb(f.getName)
-        if (!thomas.getType(f).equals("txt")) {
+        if (thomas.getType(f).equals("mp4")) {
+          image = new ImageIcon("src/resources/Vlc.png")
+        }
+        if (!thomas.getType(f).equals("txt") && !thomas.getType(f).equals("mp4")) {
           image = new ImageIcon(thumbnail.getThumb(f.getName))
         }
         var label = new JLabel(f.getName, image, Alignment.Center.id)

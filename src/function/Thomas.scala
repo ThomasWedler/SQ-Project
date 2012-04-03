@@ -27,7 +27,7 @@ class Thomas {
 	  var abort = false
 		for (f <- files) {
 			var suffix = getType(f)
-			var destination = new File("filesystem/" + suffix + "/" + f.getName)
+			var destination = new File("filesystem/" + suffix + "/" + f.getName.replace(" ", "_"))
 			var result = overwrite(f)
 			
 			if (result.equals("Cancel")) {

@@ -46,7 +46,7 @@ class Control {
   view.btnFC1.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {	    
 		var fc = new JFileChooser
-		var filter = new FileNameExtensionFilter("EXE", "exe")
+		var filter = new FileNameExtensionFilter("APP", "app")
 		fc.setFileFilter(filter)
 		fc.setMultiSelectionEnabled(false)
 		fc.showOpenDialog(null)
@@ -59,7 +59,7 @@ class Control {
   view.btnFC2.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
 	    var fc = new JFileChooser
-		var filter = new FileNameExtensionFilter("EXE", "exe")
+		var filter = new FileNameExtensionFilter("APP", "app")
 		fc.setFileFilter(filter)
 		fc.setMultiSelectionEnabled(false)
 		fc.showOpenDialog(null)
@@ -72,7 +72,7 @@ class Control {
   view.btnFC3.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
 	    var fc = new JFileChooser
-		var filter = new FileNameExtensionFilter("EXE", "exe")
+		var filter = new FileNameExtensionFilter("APP", "app")
 		fc.setFileFilter(filter)
 		fc.setMultiSelectionEnabled(false)
 		fc.showOpenDialog(null)
@@ -85,7 +85,7 @@ class Control {
   view.btnFC4.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
 	    var fc = new JFileChooser
-		var filter = new FileNameExtensionFilter("EXE", "exe")
+		var filter = new FileNameExtensionFilter("APP", "app")
 		fc.setFileFilter(filter)
 		fc.setMultiSelectionEnabled(false)
 		fc.showOpenDialog(null)
@@ -98,7 +98,7 @@ class Control {
   view.btnFC5.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
 	    var fc = new JFileChooser
-		var filter = new FileNameExtensionFilter("EXE", "exe")
+		var filter = new FileNameExtensionFilter("APP", "app")
 		fc.setFileFilter(filter)
 		fc.setMultiSelectionEnabled(false)
 		fc.showOpenDialog(null)
@@ -111,7 +111,7 @@ class Control {
   view.btnFC6.addActionListener( new ActionListener {
 	  def actionPerformed(e:ActionEvent) {
 	    var fc = new JFileChooser
-		var filter = new FileNameExtensionFilter("EXE", "exe")
+		var filter = new FileNameExtensionFilter("APP", "app")
 		fc.setFileFilter(filter)
 		fc.setMultiSelectionEnabled(false)
 		fc.showOpenDialog(null)

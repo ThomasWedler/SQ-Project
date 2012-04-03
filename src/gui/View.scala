@@ -92,6 +92,7 @@ class View extends Frame {
 	var mnNew = new JMenu("New Relation")
 	
 	var mntmPlay = new JMenuItem("Play File")
+	var mntmEdit = new JMenuItem("Edit File")
 	var mntmSave = new JMenuItem("Save Relation")
 	var mntmLoad = new JMenuItem("Load Relation")
 	var mntmOpen = new JMenuItem("Import Files")
@@ -126,6 +127,7 @@ class View extends Frame {
 	mnEdit.add(mntmRedo)
 	mnEdit.add(new JSeparator)
 	mnEdit.add(mntmPlay)
+	mnEdit.add(mntmEdit)
 	mnEdit.add(mntmDelete)
 	mnEdit.add(new JSeparator)
 	mnEdit.add(mntmSave)
@@ -243,6 +245,7 @@ class View extends Frame {
 	
 	mntmSave.setEnabled(false)
 	mntmPlay.setEnabled(false)
+	mntmEdit.setEnabled(false)
 	mntmDelete.setEnabled(false)
 
 	menu.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 0, Color.BLACK));

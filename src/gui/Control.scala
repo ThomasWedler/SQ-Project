@@ -5,22 +5,22 @@ import java.awt.event.ActionListener
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
 import java.awt.Color
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileReader
+
 import scala.collection.mutable.ListBuffer
-import basic.Import
+
 import basic.Annotation
+import basic.Import
 import javax.swing.border.LineBorder
+import javax.swing.filechooser.FileNameExtensionFilter
 import javax.swing.undo.UndoManager
+import javax.swing.ImageIcon
+import javax.swing.JFileChooser
 import javax.swing.JLabel
 import javax.swing.JOptionPane
-import java.io.File
-import java.io.BufferedReader
-import java.io.FileReader
-import javax.swing.JFileChooser
-import javax.swing.filechooser.FileNameExtensionFilter
-import javax.swing.BorderFactory
-import javax.swing.ImageIcon
 import javax.swing.SwingConstants
-import java.awt.Dimension
 
 // Verwaltung der darzustellenden Daten
 
@@ -31,6 +31,7 @@ class Control {
 
   var chris = new function.Chris
   var thomas = new function.Thomas
+  var david = new function.David
 
   var undomanager = new UndoManager
   undomanager.setLimit(1000)
@@ -175,7 +176,7 @@ class Control {
       }
     }
   })
-  
+
   //
   def cleanRelations {
     var list = model.relationList
@@ -270,14 +271,84 @@ class Control {
   // menu item play
   view.mntmPlay.addActionListener(new ActionListener {
     def actionPerformed(e: ActionEvent) {
-      // DAVID
+      var il = model.imageList
+      var rl = model.relationList
+      if (!view.annotation.isVisible) {
+        for (n <- il) {
+          if (n.isFocusable) {
+            var filename = n.getText
+            var ending = filename.substring(n.getText.length - 3, n.getText.length)
+            var file = new File("filesystem/" + ending + "/" + filename)
+            david.openReader(file)
+          }
+        }
+      } else {
+        var counter = -1
+        for (n <- rl) {
+          counter += 1
+          if (n.getText.startsWith("<html>")) {
+            var name = n.getText.replace("<html><body><span style=\"background-color: #87CEFA\";><b>", "")
+            name = name.replace("</b></span></body></html>", "")
+            n.setText(name)
+            if (rl(counter + 1).getText.isEmpty) {
+              view.btnPlay.setEnabled(false)
+              view.mntmPlay.setEnabled(false)
+            }
+            var newname = rl(counter + 1).getText
+            rl(counter + 1).setText("<html><body><span style=\"background-color: #87CEFA\";><b>" + newname + "</b></span></body></html>")
+            println(n.getText)
+            println(rl(counter + 1).getText)
+            view.relation.removeAll
+            for (i <- rl) {
+              var label = new JLabel(i.getText)
+              if (!i.getText.isEmpty)
+                addMouseListenerRelation(label)
+              view.relation.add(label)
+            }
+            view.panel.updateUI
+            var filename = n.getText
+            var ending = filename.substring(n.getText.length - 3, n.getText.length)
+            var file = new File("filesystem/" + ending + "/" + filename)
+            david.openReader(file)
+            return
+          }
+        }
+      }
     }
   })
 
   // button play
   view.btnPlay.addActionListener(new ActionListener {
     def actionPerformed(e: ActionEvent) {
-      // DAVID
+      var rl = model.relationList
+      var counter = -1
+      for (n <- rl) {
+        counter += 1
+        if (n.getText.startsWith("<html>")) {
+          var name = n.getText.replace("<html><body><span style=\"background-color: #87CEFA\";><b>", "")
+          name = name.replace("</b></span></body></html>", "")
+          n.setText(name)
+          if (rl(counter + 1).getText.isEmpty) {
+            view.btnPlay.setEnabled(false)
+            view.mntmPlay.setEnabled(false)
+          }
+          var newname = rl(counter + 1).getText
+          rl(counter + 1).setText("<html><body><span style=\"background-color: #87CEFA\";><b>" + newname + "</b></span></body></html>")
+          view.relation.removeAll
+          for (i <- rl) {
+            var label = new JLabel(i.getText)
+            if (!i.getText.isEmpty)
+              addMouseListenerRelation(label)
+            view.relation.add(label)
+          }
+          view.panel.updateUI
+          var filename = n.getText
+          var ending = filename.substring(n.getText.length - 3, n.getText.length)
+          var file = new File("filesystem/" + ending + "/" + filename)
+          david.openReader(file)
+          return
+        }
+      }
     }
   })
 
@@ -288,12 +359,27 @@ class Control {
       moveUp
     }
   })
-  
+
   // button down
   view.btnDown.addActionListener(new ActionListener {
     def actionPerformed(e: ActionEvent) {
       view.btnUp.setEnabled(true)
       moveDown
+    }
+  })
+
+  // menu item edit
+  view.mntmEdit.addActionListener(new ActionListener {
+    def actionPerformed(e: ActionEvent) {
+      var il = model.imageList
+      for (n <- il) {
+        if (n.isFocusable) {
+          var filename = n.getText
+          var ending = filename.substring(n.getText.length - 3, n.getText.length)
+          var file = new File("filesystem/" + ending + "/" + filename)
+          david.openEditor(file)
+        }
+      }
     }
   })
 
@@ -357,6 +443,7 @@ class Control {
         for (i <- model.imageList) {
           if (i.isFocusable()) {
             view.mntmPlay.setEnabled(false)
+            view.mntmEdit.setEnabled(false)
             view.mntmDelete.setEnabled(false)
             i.setBorder(new LineBorder(Color.BLUE, 0))
             i.setFocusable(false)
@@ -365,6 +452,7 @@ class Control {
         if (!label.isFocusable()) {
           view.mntmPlay.setEnabled(true)
           view.mntmDelete.setEnabled(true)
+          view.mntmEdit.setEnabled(true)
           label.setBorder(new LineBorder(Color.DARK_GRAY, 1))
           label.setFocusable(true)
         }
@@ -383,6 +471,7 @@ class Control {
         for (i <- model.imageList) {
           if (i.isFocusable()) {
             view.mntmPlay.setEnabled(false)
+            view.mntmEdit.setEnabled(false)
             view.mntmDelete.setEnabled(false)
             i.setBorder(new LineBorder(Color.BLUE, 0))
             i.setFocusable(false)
@@ -443,11 +532,12 @@ class Control {
       def mouseClicked(e: MouseEvent) {
         addLabels(false)
         view.mntmPlay.setEnabled(true)
+        view.btnPlay.setEnabled(true)
         var list = model.relationList
         var buffer = new ListBuffer[JLabel]
         for (l <- list) {
           if (!l.getText.isEmpty)
-        	  buffer += l
+            buffer += l
         }
         if (view.lblName.getText.equals("List:")) {
           view.btnUp.setEnabled(true)
@@ -608,6 +698,7 @@ class Control {
     if (view.annotation.isVisible) {
       view.relation.removeAll
       view.mntmRefresh.setEnabled(false)
+      view.mntmDelete.setEnabled(false)
       view.mntmOpen.setEnabled(false)
       view.mntmSave.setEnabled(true)
       view.btnPlay.setVisible(true)
@@ -618,8 +709,11 @@ class Control {
       view.mntmSave.setEnabled(true)
       view.btnUp.setVisible(true)
       view.btnDown.setVisible(true)
+      view.mntmEdit.setEnabled(false)
+      view.mntmPlay.setEnabled(false)
     } else {
       view.mntmRefresh.setEnabled(true)
+      view.mntmDelete.setEnabled(false)
       view.mntmOpen.setEnabled(true)
       view.btnPlay.setVisible(false)
       view.btnSave.setVisible(false)
@@ -628,6 +722,8 @@ class Control {
       view.mntmSave.setEnabled(false)
       view.btnUp.setVisible(false)
       view.btnDown.setVisible(false)
+      view.mntmEdit.setEnabled(false)
+      view.mntmPlay.setEnabled(false)
     }
   }
 
@@ -768,7 +864,7 @@ class Control {
       counter += 1
       if (l.getText.startsWith("<html>")) {
         if (counter == 1)
-        	view.btnUp.setEnabled(false)
+          view.btnUp.setEnabled(false)
         cache = list(counter - 1)
         list(counter - 1) = l
         list(counter) = cache
@@ -786,20 +882,20 @@ class Control {
     model.relationList = list
     view.panel.updateUI
   }
-  
+
   def moveDown {
     var list = model.relationList
     var copy = new ListBuffer[JLabel]
     for (l <- list)
       if (!l.getText.isEmpty)
-    	  copy += l
+        copy += l
     var cache = new JLabel("")
     var counter = -1
     for (l <- copy) {
       counter += 1
       if (l.getText.startsWith("<html>")) {
-        if (list(counter+2).getText.isEmpty)
-        	view.btnDown.setEnabled(false)
+        if (list(counter + 2).getText.isEmpty)
+          view.btnDown.setEnabled(false)
         cache = list(counter + 1)
         list(counter + 1) = l
         list(counter) = cache
