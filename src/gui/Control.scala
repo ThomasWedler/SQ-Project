@@ -157,6 +157,9 @@ class Control {
         cleanRelations
         var list = convertToFilelist(model.relationList.toList)
         new Annotation(view.lblName.getText, view.name.getText, list)
+        addOverviewLabels
+        view.panel.updateUI
+        JOptionPane.showMessageDialog(null, "Relation successfully saved.", "Success", JOptionPane.INFORMATION_MESSAGE);
       }
     }
   })
@@ -169,6 +172,9 @@ class Control {
         cleanRelations
         var list = convertToFilelist(model.relationList.toList)
         new Annotation(view.lblName.getText, view.name.getText, list)
+        addOverviewLabels
+        view.panel.updateUI
+        JOptionPane.showMessageDialog(null, "Relation successfully saved.", "Success", JOptionPane.INFORMATION_MESSAGE);
       }
     }
   })
@@ -570,7 +576,7 @@ class Control {
             l.setFocusable(true)
           }
         }
-        list = model.fill(list, 26)
+        list = model.fill(list, 31)
         view.relation.removeAll
         for (i <- list) {
           var l = new JLabel(i.getText)
@@ -646,7 +652,7 @@ class Control {
           l += i
       }
       model.relationList = l
-      list = model.fill(l.toList, 26)
+      list = model.fill(l.toList, 31)
     } else {
       var newlist = new ListBuffer[JLabel]
       for (l <- list) {
@@ -681,7 +687,7 @@ class Control {
         }
       }
       model.relationList = newlist
-      list = model.fill(newlist.toList, 26)
+      list = model.fill(newlist.toList, 31)
     }
     view.relation.removeAll
     for (i <- list) {
@@ -794,15 +800,15 @@ class Control {
         if (i.isEnabled && !i.getText.isEmpty)
           l += i
       }
-      model.relationList = model.fill(l, 26)
-      list = model.fill(l, 26)
+      model.relationList = model.fill(l, 31)
+      list = model.fill(l, 31)
     } else {
       var l = new ListBuffer[JLabel]
       for (item <- list)
         if (!item.getText.equals("List"))
           l += item
-      model.relationList = model.fill(l, 26)
-      list = model.fill(l, 26)
+      model.relationList = model.fill(l, 31)
+      list = model.fill(l, 31)
     }
     view.relation.removeAll
     for (i <- list) {
@@ -879,7 +885,7 @@ class Control {
         list(counter) = cache
       }
     }
-    list = model.fill(list, 26)
+    list = model.fill(list, 31)
     view.relation.removeAll
     for (i <- list) {
       var l = new JLabel(i.getText)
@@ -910,7 +916,7 @@ class Control {
         list(counter) = cache
       }
     }
-    list = model.fill(list, 26)
+    list = model.fill(list, 31)
     view.relation.removeAll
     for (i <- list) {
       var l = new JLabel(i.getText)
